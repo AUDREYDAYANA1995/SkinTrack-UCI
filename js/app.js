@@ -235,6 +235,76 @@ actualizarFechaHoraRegistro();
 mostrarVista("vistaInicio");
 
 /* ==========================================================
+   BÚSQUEDA AUTOMÁTICA DE PACIENTE POR CÉDULA
+========================================================== */
+
+const campoCedula = document.getElementById("cedula");
+const campoNombrePaciente = document.getElementById("nombrePaciente");
+
+let temporizadorBusquedaPaciente = null;
+
+if (campoCedula && campoNombrePaciente) {
+
+    campoCedula.addEventListener("input", function () {
+
+        clearTimeout(temporizadorBusquedaPaciente);
+
+        const cedula = campoCedula.value.trim();
+
+        if (!cedula) {
+            campoNombrePaciente.value = "";
+            campoNombrePaciente.readOnly = false;
+            return;
+        }
+
+        temporizadorBusquedaPaciente = setTimeout(
+            async function () {
+
+                try {
+
+                    const paciente =
+                        await buscarPacientePorCedula(cedula);
+
+                    if (paciente) {
+
+                        campoNombrePaciente.value =
+                            paciente.nombre;
+
+                        campoNombrePaciente.readOnly = true;
+
+                        console.log(
+                            "✅ Paciente encontrado:",
+                            paciente
+                        );
+
+                    } else {
+
+                        campoNombrePaciente.value = "";
+                        campoNombrePaciente.readOnly = false;
+
+                        console.log(
+                            "ℹ️ Paciente nuevo. Debe ingresar el nombre."
+                        );
+                    }
+
+                } catch (error) {
+
+                    campoNombrePaciente.value = "";
+                    campoNombrePaciente.readOnly = false;
+
+                    console.error(
+                        "❌ No fue posible consultar el paciente:",
+                        error
+                    );
+                }
+
+            },
+            600
+        );
+    });
+}
+
+/* ==========================================================
    PRUEBA DE CONEXIÓN CON SUPABASE
 ========================================================== */
 
