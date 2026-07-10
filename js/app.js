@@ -251,7 +251,7 @@ async function probarConexionSupabase() {
 
             console.error(
                 "❌ Error de conexión con Supabase:",
-                error
+                JSON.stringify(error, null, 2)
             );
 
             return;
