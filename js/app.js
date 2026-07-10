@@ -305,6 +305,59 @@ if (campoCedula && campoNombrePaciente) {
 }
 
 /* ==========================================================
+   REGISTRO INICIAL DEL PACIENTE
+========================================================== */
+
+const formularioValoracion =
+    document.getElementById("formValoracion");
+
+if (formularioValoracion) {
+
+    formularioValoracion.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+            const cedula =
+                document.getElementById("cedula").value.trim();
+
+            const nombre =
+                document
+                    .getElementById("nombrePaciente")
+                    .value
+                    .trim();
+
+            try {
+
+                const paciente = await obtenerOCrearPaciente({
+                    cedula,
+                    nombre
+                });
+
+                console.log(
+                    "✅ Paciente listo para continuar:",
+                    paciente
+                );
+
+                alert(
+                    `Paciente preparado correctamente: ${paciente.nombre}`
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "❌ Error al preparar el paciente:",
+                    error
+                );
+
+                alert(error.message);
+            }
+        }
+    );
+}
+
+/* ==========================================================
    PRUEBA DE CONEXIÓN CON SUPABASE
 ========================================================== */
 
