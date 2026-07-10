@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#082e9b"
+    >
+
+    <title>SkinTrack UCI</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <main class="app">
+
+        <!-- ==================================================
+             ENCABEZADO
+        =================================================== -->
+
+        <header class="app-header">
+
+            <div>
+                <p class="app-label">
+                    Seguimiento clínico
+                </p>
+
+                <h1>SkinTrack UCI</h1>
+
+                <p class="app-subtitle">
+                    Sistema de valoración de piel
+                </p>
+            </div>
+
+            <div
+                class="date-badge"
+                id="fechaActual"
+            >
+                --
+            </div>
+
+        </header>
+
+
+        <!-- ==================================================
+             PANTALLA DE INICIO
+        =================================================== -->
+
+        <section
+            id="vistaInicio"
+            class="view active"
+        >
+
+            <div class="welcome">
+
+                <p>Resumen de la unidad</p>
+
+                <h2>Estado de las valoraciones de hoy</h2>
+
+            </div>
+
+
+            <!-- Indicadores -->
+
+            <section class="summary-grid">
+
+                <article class="summary-card">
+
+                    <span class="summary-title">
+                        Pacientes activos
+                    </span>
+
+                    <strong id="totalPacientes">
+                        0
+                    </strong>
+
+                    <small>
+                        Hospitalizados actualmente
+                    </small>
+
+                </article>
+
+
+                <article class="summary-card">
+
+                    <span class="summary-title">
+                        Valorados hoy
+                    </span>
+
+                    <strong id="totalValorados">
+                        0
+                    </strong>
+
+                    <small>
+                        Registros completados
+                    </small>
+
+                </article>
+
+
+                <article class="summary-card warning">
+
+                    <span class="summary-title">
+                        Pendientes
+                    </span>
+
+                    <strong id="totalPendientes">
+                        0
+                    </strong>
+
+                    <small>
+                        Sin valoración del día
+                    </small>
+
+                </article>
+
+            </section>
+
+
+            <!-- Acción principal -->
+
+            <button
+                type="button"
+                class="primary-action"
+                data-view="vistaValoracion"
+            >
+
+                <span class="primary-icon">
+                    +
+                </span>
+
+                <span class="primary-content">
+
+                    <strong>
+                        Nueva valoración
+                    </strong>
+
+                    <small>
+                        Registrar el estado actual de la piel
+                    </small>
+
+                </span>
+
+                <span class="arrow">
+                    ›
+                </span>
+
+            </button>
+
+
+            <!-- Acciones secundarias -->
+
+            <section class="menu-list">
+
+                <button
+                    type="button"
+                    class="menu-card"
+                    data-view="vistaPacientes"
+                >
+
+                    <span class="menu-icon">
+                        P
+                    </span>
+
+                    <span class="menu-content">
+
+                        <strong>
+                            Pacientes activos
+                        </strong>
+
+                        <small>
+                            Consultar pacientes hospitalizados
+                        </small>
+
+                    </span>
+
+                    <span class="arrow">
+                        ›
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="menu-card"
+                    data-view="vistaEstadisticas"
+                >
+
+                    <span class="menu-icon">
+                        %
+                    </span>
+
+                    <span class="menu-content">
+
+                        <strong>
+                            Estadísticas
+                        </strong>
+
+                        <small>
+                            Revisar indicadores y tendencias
+                        </small>
+
+                    </span>
+
+                    <span class="arrow">
+                        ›
+                    </span>
+
+                </button>
+
+            </section>
+
+        </section>
+
+
+        <!-- ==================================================
+             NUEVA VALORACIÓN
+        =================================================== -->
+
+        <section
+            id="vistaValoracion"
+            class="view"
+        >
+
+            <div class="section-header">
+
+                <button
+                    type="button"
+                    class="back-button"
+                    data-view="vistaInicio"
+                    aria-label="Volver"
+                >
+                    ‹
+                </button>
+
+                <div>
+
+                    <p class="section-label">
+                        Registro clínico
+                    </p>
+
+                    <h2>Nueva valoración</h2>
+
+                </div>
+
+            </div>
+
+
+            <form id="formValoracion">
+
+                <div class="form-section">
+
+                    <h3>Identificación del paciente</h3>
+
+                    <div class="form-grid">
+
+                        <div class="field">
+
+                            <label for="cama">
+                                Número de cama
+                            </label>
+
+                            <input
+                                type="text"
+                                id="cama"
+                                name="cama"
+                                placeholder="Ejemplo: UCI 05"
+                                autocomplete="off"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="cedula">
+                                Cédula
+                            </label>
+
+                            <input
+                                type="text"
+                                id="cedula"
+                                name="cedula"
+                                placeholder="Número de identificación"
+                                inputmode="numeric"
+                                autocomplete="off"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="nombrePaciente">
+                            Nombre completo del paciente
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nombrePaciente"
+                            name="nombrePaciente"
+                            placeholder="Escriba el nombre completo"
+                            autocomplete="off"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-section">
+
+                    <h3>Valoración de piel</h3>
+
+                    <div class="field">
+
+                        <label for="estadoPiel">
+                            Estado general de la piel
+                        </label>
+
+                        <select
+                            id="estadoPiel"
+                            name="estadoPiel"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccione una opción
+                            </option>
+
+                            <option value="Íntegra">
+                                Íntegra
+                            </option>
+
+                            <option value="Alteración leve">
+                                Alteración leve
+                            </option>
+
+                            <option value="Alteración moderada">
+                                Alteración moderada
+                            </option>
+
+                            <option value="Alteración severa">
+                                Alteración severa
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="complejidad">
+                            Complejidad del paciente
+                        </label>
+
+                        <select
+                            id="complejidad"
+                            name="complejidad"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccione una opción
+                            </option>
+
+                            <option value="Baja">
+                                Baja
+                            </option>
+
+                            <option value="Media">
+                                Media
+                            </option>
+
+                            <option value="Alta">
+                                Alta
+                            </option>
+
+                            <option value="Crítica">
+                                Crítica
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="presentaLesion">
+                            ¿Presenta lesión?
+                        </label>
+
+                        <select
+                            id="presentaLesion"
+                            name="presentaLesion"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccione una opción
+                            </option>
+
+                            <option value="No">
+                                No
+                            </option>
+
+                            <option value="Sí">
+                                Sí
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-section">
+
+                    <h3>Responsable del registro</h3>
+
+                    <div class="field">
+
+                        <label for="registradoPor">
+                            Nombre de quien realiza el registro
+                        </label>
+
+                        <input
+                            type="text"
+                            id="registradoPor"
+                            name="registradoPor"
+                            placeholder="Nombre completo"
+                            autocomplete="off"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="automatic-data">
+
+                        <div>
+
+                            <span>Fecha</span>
+
+                            <strong id="fechaRegistro">
+                                Automática
+                            </strong>
+
+                        </div>
+
+                        <div>
+
+                            <span>Hora</span>
+
+                            <strong id="horaRegistro">
+                                Automática
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="observaciones">
+                            Observaciones
+                        </label>
+
+                        <textarea
+                            id="observaciones"
+                            name="observaciones"
+                            rows="4"
+                            placeholder="Información adicional opcional"
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="submit-button"
+                >
+                    Guardar valoración
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- ==================================================
+             PACIENTES ACTIVOS
+        =================================================== -->
+
+        <section
+            id="vistaPacientes"
+            class="view"
+        >
+
+            <div class="section-header">
+
+                <button
+                    type="button"
+                    class="back-button"
+                    data-view="vistaInicio"
+                    aria-label="Volver"
+                >
+                    ‹
+                </button>
+
+                <div>
+
+                    <p class="section-label">
+                        Seguimiento
+                    </p>
+
+                    <h2>Pacientes activos</h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="search-box">
+
+                <input
+                    type="search"
+                    id="buscarPaciente"
+                    placeholder="Buscar por cama, cédula o nombre"
+                >
+
+            </div>
+
+
+            <div
+                id="listaPacientes"
+                class="empty-state"
+            >
+
+                <div class="empty-icon">
+                    P
+                </div>
+
+                <h3>No hay pacientes cargados</h3>
+
+                <p>
+                    Cuando conectemos Supabase, los pacientes activos aparecerán aquí.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             ESTADÍSTICAS
+        =================================================== -->
+
+        <section
+            id="vistaEstadisticas"
+            class="view"
+        >
+
+            <div class="section-header">
+
+                <button
+                    type="button"
+                    class="back-button"
+                    data-view="vistaInicio"
+                    aria-label="Volver"
+                >
+                    ‹
+                </button>
+
+                <div>
+
+                    <p class="section-label">
+                        Indicadores
+                    </p>
+
+                    <h2>Estadísticas</h2>
+
+                </div>
+
+            </div>
+
+
+            <section class="statistics-grid">
+
+                <article class="stat-card">
+
+                    <span>
+                        Cumplimiento diario
+                    </span>
+
+                    <strong>
+                        0 %
+                    </strong>
+
+                    <div class="progress">
+
+                        <div style="width: 0%"></div>
+
+                    </div>
+
+                </article>
+
+
+                <article class="stat-card">
+
+                    <span>
+                        Piel íntegra
+                    </span>
+
+                    <strong>
+                        0
+                    </strong>
+
+                    <small>
+                        Pacientes valorados
+                    </small>
+
+                </article>
+
+
+                <article class="stat-card alert">
+
+                    <span>
+                        Con alteraciones
+                    </span>
+
+                    <strong>
+                        0
+                    </strong>
+
+                    <small>
+                        Registros identificados
+                    </small>
+
+                </article>
+
+
+                <article class="stat-card danger">
+
+                    <span>
+                        Con lesión
+                    </span>
+
+                    <strong>
+                        0
+                    </strong>
+
+                    <small>
+                        Pacientes registrados
+                    </small>
+
+                </article>
+
+            </section>
+
+
+            <div class="chart-placeholder">
+
+                <h3>Estado general de la piel</h3>
+
+                <p>
+                    Aquí se mostrará la gráfica cuando conectemos la base de datos.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             MENÚ INFERIOR
+        =================================================== -->
+
+        <nav class="bottom-navigation">
+
+            <button
+                type="button"
+                class="nav-button active"
+                data-view="vistaInicio"
+            >
+
+                <span class="nav-icon">
+                    I
+                </span>
+
+                <small>
+                    Inicio
+                </small>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="nav-button"
+                data-view="vistaPacientes"
+            >
+
+                <span class="nav-icon">
+                    P
+                </span>
+
+                <small>
+                    Pacientes
+                </small>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="nav-button main-nav-button"
+                data-view="vistaValoracion"
+            >
+
+                <span class="nav-plus">
+                    +
+                </span>
+
+                <small>
+                    Valorar
+                </small>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="nav-button"
+                data-view="vistaEstadisticas"
+            >
+
+                <span class="nav-icon">
+                    %
+                </span>
+
+                <small>
+                    Estadísticas
+                </small>
+
+            </button>
+
+        </nav>
+
+    </main>
+
+
+    <div
+        id="notification"
+        class="notification"
+    ></div>
+
+
+    <!-- ==================================================
+         SCRIPTS
+    =================================================== -->
+
+    <!-- Biblioteca oficial de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Configuración y conexión con Supabase -->
+    <script src="js/config.js"></script>
+
+    <!-- Funciones principales de SkinTrack UCI -->
+    <script src="js/app.js"></script>
+
+</body>
+</html>
