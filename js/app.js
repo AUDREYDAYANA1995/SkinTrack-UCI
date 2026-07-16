@@ -2,10 +2,17 @@
 
 
 /* ==========================================================
+   SKINTRACK UCI
+   Aplicación principal
+========================================================== */
+
+
+/* ==========================================================
    ELEMENTOS PRINCIPALES
 ========================================================== */
 
-const views = document.querySelectorAll(".view");
+const views =
+    document.querySelectorAll(".view");
 
 const navigationButtons =
     document.querySelectorAll("[data-view]");
@@ -19,6 +26,31 @@ const formValoracion =
 const notification =
     document.getElementById("notification");
 
+const campoCedula =
+    document.getElementById("cedula");
+
+const campoNombrePaciente =
+    document.getElementById("nombrePaciente");
+
+const campoCama =
+    document.getElementById("cama");
+
+const botonGuardar =
+    formValoracion?.querySelector(
+        'button[type="submit"]'
+    );
+
+
+/* ==========================================================
+   ESTADO TEMPORAL DE LA APLICACIÓN
+========================================================== */
+
+let temporizadorBusquedaPaciente = null;
+
+let pacienteEncontradoActual = null;
+
+let guardandoFormulario = false;
+
 
 /* ==========================================================
    CAMBIAR ENTRE PANTALLAS
@@ -30,6 +62,7 @@ function mostrarVista(viewId) {
         document.getElementById(viewId);
 
     if (!targetView) {
+
         console.error(
             `No existe la vista: ${viewId}`
         );
@@ -68,7 +101,9 @@ navigationButtons.forEach((button) => {
 
     button.addEventListener("click", () => {
 
-        mostrarVista(button.dataset.view);
+        mostrarVista(
+            button.dataset.view
+        );
 
     });
 
@@ -84,19 +119,24 @@ function actualizarFechaEncabezado() {
     const fechaActual =
         document.getElementById("fechaActual");
 
+    if (!fechaActual) {
+        return;
+    }
+
     const ahora =
         new Date();
 
     fechaActual.textContent =
-        ahora.toLocaleDateString(
-            "es-CO",
-            {
-                day: "2-digit",
-                month: "short"
-            }
-        )
-        .replace(".", "")
-        .toUpperCase();
+        ahora
+            .toLocaleDateString(
+                "es-CO",
+                {
+                    day: "2-digit",
+                    month: "short"
+                }
+            )
+            .replace(".", "")
+            .toUpperCase();
 
 }
 
@@ -116,24 +156,32 @@ function actualizarFechaHoraRegistro() {
     const horaRegistro =
         document.getElementById("horaRegistro");
 
-    fechaRegistro.textContent =
-        ahora.toLocaleDateString(
-            "es-CO",
-            {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric"
-            }
-        );
+    if (fechaRegistro) {
 
-    horaRegistro.textContent =
-        ahora.toLocaleTimeString(
-            "es-CO",
-            {
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        );
+        fechaRegistro.textContent =
+            ahora.toLocaleDateString(
+                "es-CO",
+                {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric"
+                }
+            );
+
+    }
+
+    if (horaRegistro) {
+
+        horaRegistro.textContent =
+            ahora.toLocaleTimeString(
+                "es-CO",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+    }
 
 }
 
@@ -142,9 +190,17 @@ function actualizarFechaHoraRegistro() {
    NOTIFICACIONES
 ========================================================== */
 
-function mostrarNotificacion(message) {
+function mostrarNotificacion(
+    message,
+    duration = 3500
+) {
 
-    notification.textContent = message;
+    if (!notification) {
+        return;
+    }
+
+    notification.textContent =
+        message;
 
     notification.classList.add("show");
 
@@ -152,210 +208,460 @@ function mostrarNotificacion(message) {
 
         notification.classList.remove("show");
 
-    }, 3000);
+    }, duration);
 
 }
 
 
 /* ==========================================================
-   ENVÍO TEMPORAL DEL FORMULARIO
-   Aún no guarda en Supabase
+   CONTROL DEL BOTÓN GUARDAR
 ========================================================== */
 
-formValoracion.addEventListener(
-    "submit",
-    (event) => {
+function establecerEstadoGuardado(
+    guardando
+) {
 
-        event.preventDefault();
+    guardandoFormulario =
+        guardando;
 
-        const formData =
-            new FormData(formValoracion);
-
-        const valoracion = {
-
-            cama:
-                formData.get("cama"),
-
-            cedula:
-                formData.get("cedula"),
-
-            nombrePaciente:
-                formData.get("nombrePaciente"),
-
-            estadoPiel:
-                formData.get("estadoPiel"),
-
-            complejidad:
-                formData.get("complejidad"),
-
-            presentaLesion:
-                formData.get("presentaLesion"),
-
-            registradoPor:
-                formData.get("registradoPor"),
-
-            observaciones:
-                formData.get("observaciones"),
-
-            fechaHora:
-                new Date().toISOString()
-
-        };
-
-        console.log(
-            "Valoración lista para guardar:",
-            valoracion
-        );
-
-        mostrarNotificacion(
-            "Formulario validado correctamente"
-        );
-
-        /*
-        No limpiamos todavía el formulario,
-        porque primero verificaremos que la
-        interfaz esté como la necesitas.
-
-        Cuando conectemos Supabase, aquí se
-        realizará el guardado real.
-        */
-
+    if (!botonGuardar) {
+        return;
     }
-);
+
+    botonGuardar.disabled =
+        guardando;
+
+    botonGuardar.textContent =
+        guardando
+            ? "Procesando..."
+            : "Guardar valoración";
+
+}
 
 
 /* ==========================================================
-   INICIALIZACIÓN
+   LIMPIAR DATOS DEL PACIENTE EN MEMORIA
 ========================================================== */
 
-actualizarFechaEncabezado();
+function reiniciarPacienteActual() {
 
-actualizarFechaHoraRegistro();
+    pacienteEncontradoActual =
+        null;
 
-mostrarVista("vistaInicio");
+    if (campoNombrePaciente) {
+
+        campoNombrePaciente.value =
+            "";
+
+        campoNombrePaciente.readOnly =
+            false;
+
+    }
+
+}
+
 
 /* ==========================================================
    BÚSQUEDA AUTOMÁTICA DE PACIENTE POR CÉDULA
 ========================================================== */
 
-const campoCedula = document.getElementById("cedula");
-const campoNombrePaciente = document.getElementById("nombrePaciente");
+async function consultarPacienteEscrito() {
 
-let temporizadorBusquedaPaciente = null;
+    if (
+        !campoCedula ||
+        !campoNombrePaciente
+    ) {
+        return;
+    }
 
-if (campoCedula && campoNombrePaciente) {
+    const cedula =
+        campoCedula.value.trim();
 
-    campoCedula.addEventListener("input", function () {
+    if (!cedula) {
 
-        clearTimeout(temporizadorBusquedaPaciente);
+        reiniciarPacienteActual();
 
-        const cedula = campoCedula.value.trim();
+        return;
+    }
 
-        if (!cedula) {
-            campoNombrePaciente.value = "";
-            campoNombrePaciente.readOnly = false;
-            return;
+    try {
+
+        const paciente =
+            await buscarPacientePorCedula(
+                cedula
+            );
+
+        pacienteEncontradoActual =
+            paciente;
+
+        if (paciente) {
+
+            campoNombrePaciente.value =
+                paciente.nombre;
+
+            campoNombrePaciente.readOnly =
+                true;
+
+            console.log(
+                "✅ Paciente encontrado:",
+                paciente
+            );
+
+            mostrarNotificacion(
+                "Paciente encontrado"
+            );
+
+        } else {
+
+            pacienteEncontradoActual =
+                null;
+
+            campoNombrePaciente.value =
+                "";
+
+            campoNombrePaciente.readOnly =
+                false;
+
+            console.log(
+                "ℹ️ Paciente nuevo. Debe ingresar el nombre."
+            );
+
         }
 
-        temporizadorBusquedaPaciente = setTimeout(
-            async function () {
+    } catch (error) {
 
-                try {
+        reiniciarPacienteActual();
 
-                    const paciente =
-                        await buscarPacientePorCedula(cedula);
-
-                    if (paciente) {
-
-                        campoNombrePaciente.value =
-                            paciente.nombre;
-
-                        campoNombrePaciente.readOnly = true;
-
-                        console.log(
-                            "✅ Paciente encontrado:",
-                            paciente
-                        );
-
-                    } else {
-
-                        campoNombrePaciente.value = "";
-                        campoNombrePaciente.readOnly = false;
-
-                        console.log(
-                            "ℹ️ Paciente nuevo. Debe ingresar el nombre."
-                        );
-                    }
-
-                } catch (error) {
-
-                    campoNombrePaciente.value = "";
-                    campoNombrePaciente.readOnly = false;
-
-                    console.error(
-                        "❌ No fue posible consultar el paciente:",
-                        error
-                    );
-                }
-
-            },
-            600
+        console.error(
+            "❌ No fue posible consultar el paciente:",
+            error
         );
-    });
+
+        mostrarNotificacion(
+            "No fue posible consultar el paciente"
+        );
+
+    }
+
 }
 
+
+if (
+    campoCedula &&
+    campoNombrePaciente
+) {
+
+    campoCedula.addEventListener(
+        "input",
+        function () {
+
+            window.clearTimeout(
+                temporizadorBusquedaPaciente
+            );
+
+            pacienteEncontradoActual =
+                null;
+
+            campoNombrePaciente.readOnly =
+                false;
+
+            const cedula =
+                campoCedula.value.trim();
+
+            if (!cedula) {
+
+                reiniciarPacienteActual();
+
+                return;
+            }
+
+            temporizadorBusquedaPaciente =
+                window.setTimeout(
+                    consultarPacienteEscrito,
+                    600
+                );
+
+        }
+    );
+
+}
+
+
 /* ==========================================================
-   REGISTRO INICIAL DEL PACIENTE
+   CONSTRUIR DATOS DEL FORMULARIO
 ========================================================== */
 
-const formularioValoracion =
-    document.getElementById("formValoracion");
+function obtenerDatosFormulario() {
 
-if (formularioValoracion) {
+    if (!formValoracion) {
 
-    formularioValoracion.addEventListener(
+        throw new Error(
+            "No se encontró el formulario de valoración."
+        );
+
+    }
+
+    const formData =
+        new FormData(formValoracion);
+
+    return {
+
+        cama:
+            String(
+                formData.get("cama") || ""
+            ).trim(),
+
+        cedula:
+            String(
+                formData.get("cedula") || ""
+            ).trim(),
+
+        nombrePaciente:
+            String(
+                formData.get(
+                    "nombrePaciente"
+                ) || ""
+            ).trim(),
+
+        estadoPiel:
+            String(
+                formData.get("estadoPiel") || ""
+            ).trim(),
+
+        complejidad:
+            String(
+                formData.get("complejidad") || ""
+            ).trim(),
+
+        presentaLesion:
+            String(
+                formData.get(
+                    "presentaLesion"
+                ) || ""
+            ).trim(),
+
+        registradoPor:
+            String(
+                formData.get(
+                    "registradoPor"
+                ) || ""
+            ).trim(),
+
+        observaciones:
+            String(
+                formData.get(
+                    "observaciones"
+                ) || ""
+            ).trim(),
+
+        fechaHora:
+            new Date().toISOString()
+
+    };
+
+}
+
+
+/* ==========================================================
+   VALIDAR DATOS ESENCIALES
+========================================================== */
+
+function validarDatosFormulario(
+    datos
+) {
+
+    if (!datos.cama) {
+        throw new Error(
+            "El número de cama es obligatorio."
+        );
+    }
+
+    if (!datos.cedula) {
+        throw new Error(
+            "La cédula es obligatoria."
+        );
+    }
+
+    if (!datos.nombrePaciente) {
+        throw new Error(
+            "El nombre del paciente es obligatorio."
+        );
+    }
+
+    if (!datos.estadoPiel) {
+        throw new Error(
+            "Seleccione el estado general de la piel."
+        );
+    }
+
+    if (!datos.complejidad) {
+        throw new Error(
+            "Seleccione la complejidad del paciente."
+        );
+    }
+
+    if (!datos.presentaLesion) {
+        throw new Error(
+            "Indique si el paciente presenta lesión."
+        );
+    }
+
+    if (!datos.registradoPor) {
+        throw new Error(
+            "El nombre de quien realiza el registro es obligatorio."
+        );
+    }
+
+}
+
+
+/* ==========================================================
+   PROCESAR PACIENTE E INGRESO UCI
+========================================================== */
+
+async function prepararPacienteEIngreso(
+    datosFormulario
+) {
+
+    /*
+     * 1. Buscar o crear al paciente.
+     */
+    const paciente =
+        pacienteEncontradoActual ||
+        await obtenerOCrearPaciente({
+
+            cedula:
+                datosFormulario.cedula,
+
+            nombre:
+                datosFormulario.nombrePaciente
+
+        });
+
+    console.log(
+        "✅ Paciente listo para continuar:",
+        paciente
+    );
+
+
+    /*
+     * 2. Buscar el ingreso activo o crear uno.
+     */
+    const ingreso =
+        await obtenerOCrearIngresoUCI({
+
+            pacienteId:
+                paciente.id,
+
+            cama:
+                datosFormulario.cama
+
+        });
+
+    console.log(
+        "✅ Ingreso UCI listo para continuar:",
+        ingreso
+    );
+
+    return {
+        paciente,
+        ingreso
+    };
+
+}
+
+
+/* ==========================================================
+   ENVÍO DEL FORMULARIO
+========================================================== */
+
+if (formValoracion) {
+
+    formValoracion.addEventListener(
         "submit",
         async function (event) {
 
             event.preventDefault();
 
-            const cedula =
-                document.getElementById("cedula").value.trim();
+            if (guardandoFormulario) {
+                return;
+            }
 
-            const nombre =
-                document
-                    .getElementById("nombrePaciente")
-                    .value
-                    .trim();
+            establecerEstadoGuardado(true);
 
             try {
 
-                const paciente = await obtenerOCrearPaciente({
-                    cedula,
-                    nombre
-                });
+                const datosFormulario =
+                    obtenerDatosFormulario();
 
-                console.log(
-                    "✅ Paciente listo para continuar:",
-                    paciente
+                validarDatosFormulario(
+                    datosFormulario
                 );
 
-                alert(
-                    `Paciente preparado correctamente: ${paciente.nombre}`
+                console.log(
+                    "Valoración lista para guardar:",
+                    datosFormulario
+                );
+
+                const {
+                    paciente,
+                    ingreso
+                } =
+                    await prepararPacienteEIngreso(
+                        datosFormulario
+                    );
+
+                /*
+                 * Todavía no insertamos en valoraciones.
+                 * En el siguiente módulo usaremos:
+                 *
+                 * ingreso.id
+                 * datosFormulario.estadoPiel
+                 * datosFormulario.complejidad
+                 * datosFormulario.presentaLesion
+                 * datosFormulario.registradoPor
+                 * datosFormulario.observaciones
+                 */
+
+                console.log(
+                    "✅ Datos preparados para guardar la valoración:",
+                    {
+                        paciente,
+                        ingreso,
+                        valoracion:
+                            datosFormulario
+                    }
+                );
+
+                mostrarNotificacion(
+                    "Paciente e ingreso UCI preparados correctamente",
+                    4500
                 );
 
             } catch (error) {
 
                 console.error(
-                    "❌ Error al preparar el paciente:",
+                    "❌ Error al preparar el registro:",
                     error
                 );
 
-                alert(error.message);
+                mostrarNotificacion(
+                    error.message ||
+                    "No fue posible procesar el registro",
+                    5000
+                );
+
+            } finally {
+
+                establecerEstadoGuardado(false);
+
             }
+
         }
     );
+
 }
+
 
 /* ==========================================================
    PRUEBA DE CONEXIÓN CON SUPABASE
@@ -365,16 +671,21 @@ async function probarConexionSupabase() {
 
     try {
 
-        const { data, error } = await supabaseClient
-            .from("listas")
-            .select("*")
-            .limit(1);
+        const { data, error } =
+            await supabaseClient
+                .from("listas")
+                .select("*")
+                .limit(1);
 
         if (error) {
 
             console.error(
                 "❌ Error de conexión con Supabase:",
-                JSON.stringify(error, null, 2)
+                JSON.stringify(
+                    error,
+                    null,
+                    2
+                )
             );
 
             return;
@@ -399,5 +710,16 @@ async function probarConexionSupabase() {
     }
 
 }
+
+
+/* ==========================================================
+   INICIALIZACIÓN
+========================================================== */
+
+actualizarFechaEncabezado();
+
+actualizarFechaHoraRegistro();
+
+mostrarVista("vistaInicio");
 
 probarConexionSupabase();
