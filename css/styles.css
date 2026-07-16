@@ -1028,3 +1028,13 @@ button {
 [hidden] {
     display: none !important;
 }
+
+/* ==========================================================
+   CAMPOS CONDICIONALES DEL FORMULARIO
+========================================================== */
+
+#grupoTipoLesion[hidden],
+#grupoSubtipoLescah[hidden],
+#grupoClasificacionLesion[hidden] {
+    display: none !important;
+}
