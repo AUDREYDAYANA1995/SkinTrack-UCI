@@ -664,6 +664,30 @@ mostrarNotificacion(
     4500
 );
 
+/* ==========================================================
+   REINICIAR FORMULARIO DESPUÉS DEL GUARDADO
+========================================================== */
+
+formValoracion.reset();
+
+pacienteEncontradoActual = null;
+
+if (campoNombrePaciente) {
+    campoNombrePaciente.readOnly = false;
+}
+
+actualizarFechaHoraRegistro();
+
+/*
+ * Volver al inicio después de una breve pausa
+ * para que el usuario alcance a ver la confirmación.
+ */
+window.setTimeout(() => {
+
+    mostrarVista("vistaInicio");
+
+}, 1200);
+
             } catch (error) {
 
                 console.error(
