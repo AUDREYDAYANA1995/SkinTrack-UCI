@@ -50,17 +50,6 @@ const campoSubtipoLescah =
 const campoClasificacionLesion =
     document.getElementById("clasificacionLesion");
 
-const grupoTipoLesion =
-    document.getElementById("grupoTipoLesion");
-
-const grupoSubtipoLescah =
-    document.getElementById("grupoSubtipoLescah");
-
-const grupoClasificacionLesion =
-    document.getElementById(
-        "grupoClasificacionLesion"
-    );
-
 const campoRegistradoPor =
     document.getElementById("registradoPor");
 
@@ -203,7 +192,9 @@ navigationButtons.forEach((button) => {
 function actualizarFechaEncabezado() {
 
     const fechaActual =
-        document.getElementById("fechaActual");
+        document.getElementById(
+            "fechaActual"
+        );
 
     if (!fechaActual) {
         return;
@@ -647,35 +638,43 @@ async function manejarCambioTipoLesion() {
     const configuraciones = {
 
         [TIPO_PRESION]: {
+
             lista:
                 "CLASIFICACION_PRESION",
 
             texto:
                 "Seleccione la clasificación por presión"
+
         },
 
         [TIPO_MARSI]: {
+
             lista:
                 "CLASIFICACION_MARSI",
 
             texto:
                 "Seleccione la clasificación MARSI"
+
         },
 
         [TIPO_DESGARRO]: {
+
             lista:
                 "CLASIFICACION_DESGARRO",
 
             texto:
                 "Seleccione la clasificación del desgarro"
+
         },
 
         [TIPO_FRICCION]: {
+
             lista:
                 "CLASIFICACION_FRICCION",
 
             texto:
                 "Seleccione la clasificación por fricción"
+
         }
 
     };
@@ -771,6 +770,32 @@ if (campoSubtipoLescah) {
 
 
 /* ==========================================================
+   MEDIDAS PREVENTIVAS
+========================================================== */
+
+/**
+ * Obtiene todas las medidas preventivas seleccionadas.
+ *
+ * @param {FormData} formData
+ * @returns {string[]}
+ */
+function obtenerMedidasPreventivas(
+    formData
+) {
+
+    return formData
+        .getAll("medidasPreventivas")
+        .map(
+            (medida) =>
+                String(medida || "")
+                    .trim()
+        )
+        .filter(Boolean);
+
+}
+
+
+/* ==========================================================
    CONSTRUIR DATOS DEL FORMULARIO
 ========================================================== */
 
@@ -786,6 +811,11 @@ function obtenerDatosFormulario() {
 
     const formData =
         new FormData(formValoracion);
+
+    const medidasPreventivas =
+        obtenerMedidasPreventivas(
+            formData
+        );
 
     return {
 
@@ -838,6 +868,28 @@ function obtenerDatosFormulario() {
                     "clasificacionLesion"
                 ) || ""
             ).trim(),
+
+        medidasPreventivas,
+
+        cambioPosicion:
+            medidasPreventivas.includes(
+                "Cambio de posición"
+            ),
+
+        linovera:
+            medidasPreventivas.includes(
+                "Linovera"
+            ),
+
+        apositoLiberacion:
+            medidasPreventivas.includes(
+                "Apósitos de liberación"
+            ),
+
+        barreraProteccion:
+            medidasPreventivas.includes(
+                "Barrera de protección"
+            ),
 
         registradoPor:
             String(
@@ -944,6 +996,19 @@ function validarDatosFormulario(
 
     }
 
+    if (
+        !Array.isArray(
+            datos.medidasPreventivas
+        ) ||
+        datos.medidasPreventivas.length === 0
+    ) {
+
+        throw new Error(
+            "Seleccione al menos una medida preventiva."
+        );
+
+    }
+
     if (!datos.registradoPor) {
 
         throw new Error(
@@ -954,6 +1019,10 @@ function validarDatosFormulario(
 
 }
 
+
+/* ==========================================================
+   VALIDAR SI REQUIERE CLASIFICACIÓN
+========================================================== */
 
 function requiereClasificacion(datos) {
 
@@ -969,7 +1038,9 @@ function requiereClasificacion(datos) {
             datos.tipoLesion
         )
     ) {
+
         return true;
+
     }
 
     return (
@@ -1074,7 +1145,9 @@ if (formValoracion) {
                 return;
             }
 
-            establecerEstadoGuardado(true);
+            establecerEstadoGuardado(
+                true
+            );
 
             try {
 
@@ -1124,6 +1197,18 @@ if (formValoracion) {
 
                         clasificacionLesion:
                             datosFormulario.clasificacionLesion,
+
+                        cambioPosicion:
+                            datosFormulario.cambioPosicion,
+
+                        linovera:
+                            datosFormulario.linovera,
+
+                        apositoLiberacion:
+                            datosFormulario.apositoLiberacion,
+
+                        barreraProteccion:
+                            datosFormulario.barreraProteccion,
 
                         observaciones:
                             datosFormulario.observaciones
@@ -1175,7 +1260,9 @@ if (formValoracion) {
 
             } finally {
 
-                establecerEstadoGuardado(false);
+                establecerEstadoGuardado(
+                    false
+                );
 
             }
 
@@ -1211,6 +1298,7 @@ async function probarConexionSupabase() {
             );
 
             return;
+
         }
 
         console.log(
@@ -1251,10 +1339,15 @@ async function inicializarAplicacion() {
     reiniciarCamposLesion();
 
     await Promise.all([
+
         probarConexionSupabase(),
+
         actualizarResumenInicio(),
+
         cargarCamas(),
+
         cargarCatalogosFormulario()
+
     ]);
 
     console.log(
