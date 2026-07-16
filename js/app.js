@@ -35,6 +35,9 @@ const campoNombrePaciente =
 const campoCama =
     document.getElementById("cama");
 
+const campoBuscarPaciente =
+    document.getElementById("buscarPaciente");
+
 const botonGuardar =
     formValoracion?.querySelector(
         'button[type="submit"]'
@@ -91,25 +94,36 @@ function mostrarVista(viewId) {
     });
 
     if (viewId === "vistaValoracion") {
+
         actualizarFechaHoraRegistro();
+
     }
-   
-   if (viewId === "vistaPacientes") {
-    cargarPacientesActivos();
-   }
+
+    if (viewId === "vistaPacientes") {
+
+        if (campoBuscarPaciente) {
+            campoBuscarPaciente.value = "";
+        }
+
+        cargarPacientesActivos();
+
+    }
 
 }
 
 
 navigationButtons.forEach((button) => {
 
-    button.addEventListener("click", () => {
+    button.addEventListener(
+        "click",
+        () => {
 
-        mostrarVista(
-            button.dataset.view
-        );
+            mostrarVista(
+                button.dataset.view
+            );
 
-    });
+        }
+    );
 
 });
 
@@ -392,6 +406,26 @@ if (
 
 
 /* ==========================================================
+   BUSCADOR DE PACIENTES ACTIVOS
+========================================================== */
+
+if (campoBuscarPaciente) {
+
+    campoBuscarPaciente.addEventListener(
+        "input",
+        function () {
+
+            buscarEnPacientesActivos(
+                campoBuscarPaciente.value
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
    CONSTRUIR DATOS DEL FORMULARIO
 ========================================================== */
 
@@ -429,12 +463,16 @@ function obtenerDatosFormulario() {
 
         estadoPiel:
             String(
-                formData.get("estadoPiel") || ""
+                formData.get(
+                    "estadoPiel"
+                ) || ""
             ).trim(),
 
         complejidad:
             String(
-                formData.get("complejidad") || ""
+                formData.get(
+                    "complejidad"
+                ) || ""
             ).trim(),
 
         presentaLesion:
@@ -475,45 +513,59 @@ function validarDatosFormulario(
 ) {
 
     if (!datos.cama) {
+
         throw new Error(
             "El número de cama es obligatorio."
         );
+
     }
 
     if (!datos.cedula) {
+
         throw new Error(
             "La cédula es obligatoria."
         );
+
     }
 
     if (!datos.nombrePaciente) {
+
         throw new Error(
             "El nombre del paciente es obligatorio."
         );
+
     }
 
     if (!datos.estadoPiel) {
+
         throw new Error(
             "Seleccione el estado general de la piel."
         );
+
     }
 
     if (!datos.complejidad) {
+
         throw new Error(
             "Seleccione la complejidad del paciente."
         );
+
     }
 
     if (!datos.presentaLesion) {
+
         throw new Error(
             "Indique si el paciente presenta lesión."
         );
+
     }
 
     if (!datos.registradoPor) {
+
         throw new Error(
             "El nombre de quien realiza el registro es obligatorio."
         );
+
     }
 
 }
@@ -527,9 +579,6 @@ async function prepararPacienteEIngreso(
     datosFormulario
 ) {
 
-    /*
-     * 1. Buscar o crear al paciente.
-     */
     const paciente =
         pacienteEncontradoActual ||
         await obtenerOCrearPaciente({
@@ -547,10 +596,6 @@ async function prepararPacienteEIngreso(
         paciente
     );
 
-
-    /*
-     * 2. Buscar el ingreso activo o crear uno.
-     */
     const ingreso =
         await obtenerOCrearIngresoUCI({
 
@@ -571,6 +616,33 @@ async function prepararPacienteEIngreso(
         paciente,
         ingreso
     };
+
+}
+
+
+/* ==========================================================
+   REINICIAR FORMULARIO DESPUÉS DEL GUARDADO
+========================================================== */
+
+function limpiarFormularioValoracion() {
+
+    if (!formValoracion) {
+        return;
+    }
+
+    formValoracion.reset();
+
+    pacienteEncontradoActual =
+        null;
+
+    if (campoNombrePaciente) {
+
+        campoNombrePaciente.readOnly =
+            false;
+
+    }
+
+    actualizarFechaHoraRegistro();
 
 }
 
@@ -615,99 +687,61 @@ if (formValoracion) {
                         datosFormulario
                     );
 
-                /*
-                 * Todavía no insertamos en valoraciones.
-                 * En el siguiente módulo usaremos:
-                 *
-                 * ingreso.id
-                 * datosFormulario.estadoPiel
-                 * datosFormulario.complejidad
-                 * datosFormulario.presentaLesion
-                 * datosFormulario.registradoPor
-                 * datosFormulario.observaciones
-                 */
-
                 const valoracionGuardada =
-    await guardarValoracion({
+                    await guardarValoracion({
 
-        ingresoId:
-            ingreso.id,
+                        ingresoId:
+                            ingreso.id,
 
-        cama:
-            ingreso.cama,
+                        cama:
+                            ingreso.cama,
 
-        registradoPor:
-            datosFormulario.registradoPor,
+                        registradoPor:
+                            datosFormulario.registradoPor,
 
-        estadoPiel:
-            datosFormulario.estadoPiel,
+                        estadoPiel:
+                            datosFormulario.estadoPiel,
 
-        complejidad:
-            datosFormulario.complejidad,
+                        complejidad:
+                            datosFormulario.complejidad,
 
-        presentaLesion:
-            datosFormulario.presentaLesion,
+                        presentaLesion:
+                            datosFormulario.presentaLesion,
 
-        observaciones:
-            datosFormulario.observaciones
+                        observaciones:
+                            datosFormulario.observaciones
 
-    });
+                    });
 
-console.log(
-    "✅ Flujo completo guardado:",
-    {
-        paciente,
-        ingreso,
-        valoracion:
-            valoracionGuardada
-    }
-);
+                console.log(
+                    "✅ Flujo completo guardado:",
+                    {
+                        paciente,
+                        ingreso,
+                        valoracion:
+                            valoracionGuardada
+                    }
+                );
 
-mostrarNotificacion(
-    "Valoración guardada correctamente",
-    4500
-);
+                mostrarNotificacion(
+                    "Valoración guardada correctamente",
+                    4500
+                );
 
-await actualizarResumenInicio();
+                await actualizarResumenInicio();
 
-/* Reiniciar formulario */
-formValoracion.reset();
+                limpiarFormularioValoracion();
 
-pacienteEncontradoActual = null;
+                window.setTimeout(
+                    () => {
 
-if (campoNombrePaciente) {
-    campoNombrePaciente.readOnly = false;
-}
+                        mostrarVista(
+                            "vistaInicio"
+                        );
 
-actualizarFechaHoraRegistro();
-
-window.setTimeout(() => {
-    mostrarVista("vistaInicio");
-}, 1200);
-
-/* ==========================================================
-   REINICIAR FORMULARIO DESPUÉS DEL GUARDADO
-========================================================== */
-
-formValoracion.reset();
-
-pacienteEncontradoActual = null;
-
-if (campoNombrePaciente) {
-    campoNombrePaciente.readOnly = false;
-}
-
-actualizarFechaHoraRegistro();
-
-/*
- * Volver al inicio después de una breve pausa
- * para que el usuario alcance a ver la confirmación.
- */
-window.setTimeout(() => {
-
-    mostrarVista("vistaInicio");
-
-}, 1200);
+                    },
+                    1200
+                );
 
             } catch (error) {
 
