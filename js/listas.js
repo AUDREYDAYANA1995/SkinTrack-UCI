@@ -65,6 +65,115 @@ async function obtenerListaPorTipo(tipo) {
 
 
 /* ==========================================================
+   CARGAR CUALQUIER LISTA EN UN SELECT
+========================================================== */
+
+/**
+ * Llena un select con los valores de una lista de Supabase.
+ *
+ * @param {string} tipo
+ * @param {string} idSelect
+ * @param {string} textoInicial
+ * @returns {Promise<Array>}
+ */
+async function cargarLista(
+    tipo,
+    idSelect,
+    textoInicial = "Seleccione una opción"
+) {
+
+    const selector =
+        document.getElementById(idSelect);
+
+    if (!selector) {
+
+        console.warn(
+            `⚠️ No se encontró el selector: ${idSelect}`
+        );
+
+        return [];
+    }
+
+    selector.disabled = true;
+
+    selector.innerHTML = `
+        <option value="">
+            Cargando opciones...
+        </option>
+    `;
+
+    try {
+
+        const lista =
+            await obtenerListaPorTipo(tipo);
+
+        if (lista.length === 0) {
+
+            selector.innerHTML = `
+                <option value="">
+                    No hay opciones disponibles
+                </option>
+            `;
+
+            console.warn(
+                `⚠️ No se encontraron opciones activas para ${tipo}.`
+            );
+
+            return [];
+        }
+
+        selector.innerHTML = `
+            <option value="">
+                ${textoInicial}
+            </option>
+        `;
+
+        lista.forEach((item) => {
+
+            const opcion =
+                document.createElement("option");
+
+            opcion.value =
+                item.valor;
+
+            opcion.textContent =
+                item.valor;
+
+            selector.appendChild(opcion);
+
+        });
+
+        selector.disabled = false;
+
+        console.log(
+            `✅ ${tipo} cargado correctamente:`,
+            lista.length
+        );
+
+        return lista;
+
+    } catch (error) {
+
+        console.error(
+            `❌ No fue posible cargar ${tipo}:`,
+            error
+        );
+
+        selector.innerHTML = `
+            <option value="">
+                Error al cargar las opciones
+            </option>
+        `;
+
+        selector.disabled = true;
+
+        return [];
+    }
+
+}
+
+
+/* ==========================================================
    DETERMINAR EL ÁREA DE UNA CAMA
 ========================================================== */
 
@@ -138,6 +247,8 @@ function agruparCamasPorArea(camas) {
 
 /**
  * Llena el selector de camas con datos de Supabase.
+ *
+ * @returns {Promise<Array>}
  */
 async function cargarCamas() {
 
@@ -150,8 +261,7 @@ async function cargarCamas() {
             "⚠️ No se encontró el selector de camas."
         );
 
-        return;
-
+        return [];
     }
 
     selectorCama.disabled = true;
@@ -181,8 +291,7 @@ async function cargarCamas() {
                 "⚠️ No se encontraron camas activas."
             );
 
-            return;
-
+            return [];
         }
 
         const camasAgrupadas =
@@ -256,6 +365,8 @@ async function cargarCamas() {
             camas.length
         );
 
+        return camas;
+
     } catch (error) {
 
         console.error(
@@ -271,7 +382,216 @@ async function cargarCamas() {
 
         selectorCama.disabled = true;
 
+        return [];
     }
+
+}
+
+
+/* ==========================================================
+   CARGAR CATÁLOGOS PRINCIPALES DEL FORMULARIO
+========================================================== */
+
+/**
+ * Carga los catálogos visibles inicialmente.
+ */
+async function cargarCatalogosFormulario() {
+
+    const resultados =
+        await Promise.all([
+
+            cargarLista(
+                "RIESGO",
+                "riesgo",
+                "Seleccione el riesgo"
+            ),
+
+            cargarLista(
+                "ESTADO_PIEL",
+                "estadoPiel",
+                "Seleccione el estado de la piel"
+            )
+
+        ]);
+
+    console.log(
+        "✅ Catálogos principales del formulario cargados"
+    );
+
+    return resultados;
+}
+
+
+/* ==========================================================
+   CARGAR TIPOS DE LESIÓN
+========================================================== */
+
+/**
+ * Carga el catálogo de tipos de lesión.
+ */
+async function cargarTiposLesion() {
+
+    return await cargarLista(
+        "TIPO_LESION",
+        "tipoLesion",
+        "Seleccione un tipo de lesión"
+    );
+
+}
+
+
+/* ==========================================================
+   CARGAR SUBTIPOS LESCAH
+========================================================== */
+
+/**
+ * Carga el catálogo de subtipos LESCAH.
+ */
+async function cargarSubtiposLescah() {
+
+    return await cargarLista(
+        "SUBTIPO_LESCAH",
+        "subtipoLescah",
+        "Seleccione una clasificación LESCAH"
+    );
+
+}
+
+
+/* ==========================================================
+   CARGAR CLASIFICACIÓN SEGÚN EL TIPO DE LESIÓN
+========================================================== */
+
+/**
+ * Carga la clasificación correspondiente.
+ *
+ * @param {string} tipoLista
+ * @param {string} textoInicial
+ */
+async function cargarClasificacionLesion(
+    tipoLista,
+    textoInicial = "Seleccione una clasificación"
+) {
+
+    return await cargarLista(
+        tipoLista,
+        "clasificacionLesion",
+        textoInicial
+    );
+
+}
+
+
+/* ==========================================================
+   LIMPIAR UN SELECT
+========================================================== */
+
+/**
+ * Limpia y deshabilita un select.
+ *
+ * @param {string} idSelect
+ * @param {string} texto
+ */
+function limpiarSelector(
+    idSelect,
+    texto = "Seleccione una opción"
+) {
+
+    const selector =
+        document.getElementById(idSelect);
+
+    if (!selector) {
+        return;
+    }
+
+    selector.innerHTML = `
+        <option value="">
+            ${texto}
+        </option>
+    `;
+
+    selector.disabled = true;
+
+}
+
+
+/* ==========================================================
+   MOSTRAR U OCULTAR GRUPOS DEL FORMULARIO
+========================================================== */
+
+/**
+ * Muestra un grupo del formulario.
+ *
+ * @param {string} idGrupo
+ */
+function mostrarGrupo(idGrupo) {
+
+    const grupo =
+        document.getElementById(idGrupo);
+
+    if (!grupo) {
+        return;
+    }
+
+    grupo.hidden = false;
+
+}
+
+
+/**
+ * Oculta un grupo del formulario.
+ *
+ * @param {string} idGrupo
+ */
+function ocultarGrupo(idGrupo) {
+
+    const grupo =
+        document.getElementById(idGrupo);
+
+    if (!grupo) {
+        return;
+    }
+
+    grupo.hidden = true;
+
+}
+
+
+/* ==========================================================
+   REINICIAR CAMPOS DINÁMICOS DE LESIONES
+========================================================== */
+
+/**
+ * Oculta y reinicia todos los campos condicionales.
+ */
+function reiniciarCamposLesion() {
+
+    ocultarGrupo(
+        "grupoTipoLesion"
+    );
+
+    ocultarGrupo(
+        "grupoSubtipoLescah"
+    );
+
+    ocultarGrupo(
+        "grupoClasificacionLesion"
+    );
+
+    limpiarSelector(
+        "tipoLesion",
+        "Seleccione un tipo de lesión"
+    );
+
+    limpiarSelector(
+        "subtipoLescah",
+        "Seleccione una clasificación LESCAH"
+    );
+
+    limpiarSelector(
+        "clasificacionLesion",
+        "Seleccione una clasificación"
+    );
 
 }
 
