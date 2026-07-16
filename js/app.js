@@ -623,20 +623,46 @@ if (formValoracion) {
                  * datosFormulario.observaciones
                  */
 
-                console.log(
-                    "✅ Datos preparados para guardar la valoración:",
-                    {
-                        paciente,
-                        ingreso,
-                        valoracion:
-                            datosFormulario
-                    }
-                );
+                const valoracionGuardada =
+    await guardarValoracion({
 
-                mostrarNotificacion(
-                    "Paciente e ingreso UCI preparados correctamente",
-                    4500
-                );
+        ingresoId:
+            ingreso.id,
+
+        cama:
+            ingreso.cama,
+
+        registradoPor:
+            datosFormulario.registradoPor,
+
+        estadoPiel:
+            datosFormulario.estadoPiel,
+
+        complejidad:
+            datosFormulario.complejidad,
+
+        presentaLesion:
+            datosFormulario.presentaLesion,
+
+        observaciones:
+            datosFormulario.observaciones
+
+    });
+
+console.log(
+    "✅ Flujo completo guardado:",
+    {
+        paciente,
+        ingreso,
+        valoracion:
+            valoracionGuardada
+    }
+);
+
+mostrarNotificacion(
+    "Valoración guardada correctamente",
+    4500
+);
 
             } catch (error) {
 
