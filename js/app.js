@@ -664,6 +664,23 @@ mostrarNotificacion(
     4500
 );
 
+await actualizarResumenInicio();
+
+/* Reiniciar formulario */
+formValoracion.reset();
+
+pacienteEncontradoActual = null;
+
+if (campoNombrePaciente) {
+    campoNombrePaciente.readOnly = false;
+}
+
+actualizarFechaHoraRegistro();
+
+window.setTimeout(() => {
+    mostrarVista("vistaInicio");
+}, 1200);
+
 /* ==========================================================
    REINICIAR FORMULARIO DESPUÉS DEL GUARDADO
 ========================================================== */
