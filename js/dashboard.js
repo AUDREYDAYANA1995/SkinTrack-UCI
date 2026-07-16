@@ -255,158 +255,52 @@ async function obtenerPacientesActivosConDatos() {
 }
 
 
-/**
- * Construye la lista visual de pacientes activos.
- */
-async function cargarPacientesActivos() {
+/* ==========================================================
+   LISTADO DE PACIENTES ACTIVOS
+========================================================== */
 
-    const contenedor =
-        document.getElementById("listaPacientes");
-
-    if (!contenedor) {
-        return;
-    }
-
-    try {
-
-        const [
-            ingresosActivos,
-            valoracionesHoy
-        ] = await Promise.all([
-            obtenerPacientesActivosConDatos(),
-            obtenerValoracionesDeHoy()
-        ]);
-
-        const ingresosValoradosHoy =
-            new Set(
-                valoracionesHoy.map(
-                    (valoracion) =>
-                        valoracion.ingreso_id
-                )
-            );
-
-        if (ingresosActivos.length === 0) {
-
-            contenedor.className =
-                "empty-state";
-
-            contenedor.innerHTML = `
-                <div class="empty-icon">P</div>
-
-                <h3>No hay pacientes activos</h3>
-
-                <p>
-                    Los pacientes con ingreso activo
-                    aparecerán aquí.
-                </p>
-            `;
-
-            return;
-        }
-
-        contenedor.className =
-            "patients-list";
-
-        contenedor.innerHTML =
-            ingresosActivos
-                .map((ingreso) => {
-
-                    const paciente =
-                        ingreso.pacientes || {};
-
-                    const valoradoHoy =
-                        ingresosValoradosHoy.has(
-                            ingreso.id
-                        );
-
-                    const fechaIngreso =
-                        ingreso.fecha_ingreso
-                            ? new Date(
-                                ingreso.fecha_ingreso
-                            ).toLocaleDateString(
-                                "es-CO",
-                                {
-                                    day: "2-digit",
-                                    month: "2-digit",
-                                    year: "numeric"
-                                }
-                            )
-                            : "Sin fecha";
-
-                    return `
-                        <article class="patient-card">
-
-                            <div class="patient-card-header">
-
-                                <div>
-                                    <span class="patient-bed">
-                                        Cama ${ingreso.cama || "—"}
-                                    </span>
-
-                                    <h3>
-                                        ${paciente.nombre || "Sin nombre"}
-                                    </h3>
-                                </div>
-
-                                <span class="
-                                    patient-status
-                                    ${valoradoHoy
-                                        ? "completed"
-                                        : "pending"}
-                                ">
-                                    ${valoradoHoy
-                                        ? "Valorado hoy"
-                                        : "Pendiente"}
-                                </span>
-
-                            </div>
-
-                            <div class="patient-card-data">
-
-                                <p>
-                                    <strong>Cédula:</strong>
-                                    ${paciente.cedula || "Sin dato"}
-                                </p>
-
-                                <p>
-                                    <strong>Ingreso:</strong>
-                                    ${fechaIngreso}
-                                </p>
-
-                            </div>
-
-                        </article>
-                    `;
-
-                })
-                .join("");
-
-        console.log(
-            "✅ Pacientes activos cargados:",
-            ingresosActivos.length
-        );
-
-    } catch (error) {
-
-        console.error(
-            "❌ No fue posible cargar los pacientes activos:",
-            error
-        );
-
-        contenedor.className =
-            "empty-state";
-
-        contenedor.innerHTML = `
-            <div class="empty-icon">!</div>
-
-            <h3>No fue posible cargar los pacientes</h3>
-
-            <p>
-                Intente nuevamente en unos segundos.
-            </p>
-        `;
-    }
+async function obtenerPacientesActivosConDatos() {
+    // Esta función se conserva como está.
 }
+
+
+/* ==========================================================
+   PACIENTES ACTIVOS Y BÚSQUEDA
+========================================================== */
+
+let pacientesActivosEnMemoria = [];
+
+function escaparHTML(valor) {
+    // ...
+}
+
+function mostrarResumenPacientesActivos() {
+    // ...
+}
+
+function renderizarResultadosPacientes(ingresos) {
+    // ...
+}
+
+async function cargarPacientesActivos() {
+    // ...
+}
+
+function buscarEnPacientesActivos(texto) {
+    // ...
+}
+
+let pacientesActivosEnMemoria = [];
+
+function escaparHTML() {}
+
+function mostrarResumenPacientesActivos() {}
+
+function renderizarResultadosPacientes() {}
+
+async function cargarPacientesActivos() {}
+
+function buscarEnPacientesActivos() {}
 
 console.log(
     "✅ Módulo de dashboard cargado correctamente"
