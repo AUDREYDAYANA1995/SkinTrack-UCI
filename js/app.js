@@ -790,3 +790,5 @@ actualizarFechaHoraRegistro();
 mostrarVista("vistaInicio");
 
 probarConexionSupabase();
+
+actualizarResumenInicio();
