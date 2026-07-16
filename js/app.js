@@ -93,6 +93,10 @@ function mostrarVista(viewId) {
     if (viewId === "vistaValoracion") {
         actualizarFechaHoraRegistro();
     }
+   
+   if (viewId === "vistaPacientes") {
+    cargarPacientesActivos();
+   }
 
 }
 
