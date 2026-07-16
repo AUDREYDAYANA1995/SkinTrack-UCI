@@ -26,14 +26,46 @@ const formValoracion =
 const notification =
     document.getElementById("notification");
 
+const campoCama =
+    document.getElementById("cama");
+
 const campoCedula =
     document.getElementById("cedula");
 
 const campoNombrePaciente =
     document.getElementById("nombrePaciente");
 
-const campoCama =
-    document.getElementById("cama");
+const campoRiesgo =
+    document.getElementById("riesgo");
+
+const campoEstadoPiel =
+    document.getElementById("estadoPiel");
+
+const campoTipoLesion =
+    document.getElementById("tipoLesion");
+
+const campoSubtipoLescah =
+    document.getElementById("subtipoLescah");
+
+const campoClasificacionLesion =
+    document.getElementById("clasificacionLesion");
+
+const grupoTipoLesion =
+    document.getElementById("grupoTipoLesion");
+
+const grupoSubtipoLescah =
+    document.getElementById("grupoSubtipoLescah");
+
+const grupoClasificacionLesion =
+    document.getElementById(
+        "grupoClasificacionLesion"
+    );
+
+const campoRegistradoPor =
+    document.getElementById("registradoPor");
+
+const campoObservaciones =
+    document.getElementById("observaciones");
 
 const campoBuscarPaciente =
     document.getElementById("buscarPaciente");
@@ -45,14 +77,43 @@ const botonGuardar =
 
 
 /* ==========================================================
-   ESTADO TEMPORAL DE LA APLICACIÓN
+   CONSTANTES CLÍNICAS
 ========================================================== */
 
-let temporizadorBusquedaPaciente = null;
+const ESTADO_LESION =
+    "Lesión";
 
-let pacienteEncontradoActual = null;
+const TIPO_PRESION =
+    "Lesión por presión";
 
-let guardandoFormulario = false;
+const TIPO_LESCAH =
+    "LESCAH";
+
+const TIPO_MARSI =
+    "MARSI";
+
+const TIPO_DESGARRO =
+    "Desgarro cutáneo";
+
+const TIPO_FRICCION =
+    "Fricción";
+
+const SUBTIPO_DAI =
+    "DAI (Dermatitis asociada a la incontinencia)";
+
+
+/* ==========================================================
+   ESTADO TEMPORAL
+========================================================== */
+
+let temporizadorBusquedaPaciente =
+    null;
+
+let pacienteEncontradoActual =
+    null;
+
+let guardandoFormulario =
+    false;
 
 
 /* ==========================================================
@@ -74,19 +135,23 @@ function mostrarVista(viewId) {
     }
 
     views.forEach((view) => {
+
         view.classList.remove("active");
+
     });
 
     targetView.classList.add("active");
 
-    bottomNavigationButtons.forEach((button) => {
+    bottomNavigationButtons.forEach(
+        (button) => {
 
-        button.classList.toggle(
-            "active",
-            button.dataset.view === viewId
-        );
+            button.classList.toggle(
+                "active",
+                button.dataset.view === viewId
+            );
 
-    });
+        }
+    );
 
     window.scrollTo({
         top: 0,
@@ -102,7 +167,10 @@ function mostrarVista(viewId) {
     if (viewId === "vistaPacientes") {
 
         if (campoBuscarPaciente) {
-            campoBuscarPaciente.value = "";
+
+            campoBuscarPaciente.value =
+                "";
+
         }
 
         cargarPacientesActivos();
@@ -160,7 +228,7 @@ function actualizarFechaEncabezado() {
 
 
 /* ==========================================================
-   FECHA Y HORA AUTOMÁTICAS DEL FORMULARIO
+   FECHA Y HORA AUTOMÁTICAS
 ========================================================== */
 
 function actualizarFechaHoraRegistro() {
@@ -169,10 +237,14 @@ function actualizarFechaHoraRegistro() {
         new Date();
 
     const fechaRegistro =
-        document.getElementById("fechaRegistro");
+        document.getElementById(
+            "fechaRegistro"
+        );
 
     const horaRegistro =
-        document.getElementById("horaRegistro");
+        document.getElementById(
+            "horaRegistro"
+        );
 
     if (fechaRegistro) {
 
@@ -209,8 +281,8 @@ function actualizarFechaHoraRegistro() {
 ========================================================== */
 
 function mostrarNotificacion(
-    message,
-    duration = 3500
+    mensaje,
+    duracion = 3500
 ) {
 
     if (!notification) {
@@ -218,15 +290,20 @@ function mostrarNotificacion(
     }
 
     notification.textContent =
-        message;
+        mensaje;
 
     notification.classList.add("show");
 
-    window.setTimeout(() => {
+    window.setTimeout(
+        () => {
 
-        notification.classList.remove("show");
+            notification.classList.remove(
+                "show"
+            );
 
-    }, duration);
+        },
+        duracion
+    );
 
 }
 
@@ -258,7 +335,7 @@ function establecerEstadoGuardado(
 
 
 /* ==========================================================
-   LIMPIAR DATOS DEL PACIENTE EN MEMORIA
+   PACIENTE ACTUAL
 ========================================================== */
 
 function reiniciarPacienteActual() {
@@ -280,7 +357,7 @@ function reiniciarPacienteActual() {
 
 
 /* ==========================================================
-   BÚSQUEDA AUTOMÁTICA DE PACIENTE POR CÉDULA
+   BÚSQUEDA AUTOMÁTICA DEL PACIENTE
 ========================================================== */
 
 async function consultarPacienteEscrito() {
@@ -426,6 +503,274 @@ if (campoBuscarPaciente) {
 
 
 /* ==========================================================
+   UTILIDADES DEL FORMULARIO DINÁMICO
+========================================================== */
+
+function establecerCampoRequerido(
+    campo,
+    requerido
+) {
+
+    if (!campo) {
+        return;
+    }
+
+    campo.required =
+        requerido;
+
+}
+
+
+function ocultarClasificacion() {
+
+    ocultarGrupo(
+        "grupoClasificacionLesion"
+    );
+
+    limpiarSelector(
+        "clasificacionLesion",
+        "Seleccione una clasificación"
+    );
+
+    establecerCampoRequerido(
+        campoClasificacionLesion,
+        false
+    );
+
+}
+
+
+function ocultarSubtipoLescah() {
+
+    ocultarGrupo(
+        "grupoSubtipoLescah"
+    );
+
+    limpiarSelector(
+        "subtipoLescah",
+        "Seleccione una clasificación LESCAH"
+    );
+
+    establecerCampoRequerido(
+        campoSubtipoLescah,
+        false
+    );
+
+}
+
+
+function ocultarTipoLesion() {
+
+    ocultarGrupo(
+        "grupoTipoLesion"
+    );
+
+    limpiarSelector(
+        "tipoLesion",
+        "Seleccione un tipo de lesión"
+    );
+
+    establecerCampoRequerido(
+        campoTipoLesion,
+        false
+    );
+
+}
+
+
+/* ==========================================================
+   CAMBIO DEL ESTADO GENERAL DE LA PIEL
+========================================================== */
+
+async function manejarCambioEstadoPiel() {
+
+    const estado =
+        campoEstadoPiel?.value || "";
+
+    ocultarTipoLesion();
+
+    ocultarSubtipoLescah();
+
+    ocultarClasificacion();
+
+    if (estado !== ESTADO_LESION) {
+        return;
+    }
+
+    mostrarGrupo(
+        "grupoTipoLesion"
+    );
+
+    establecerCampoRequerido(
+        campoTipoLesion,
+        true
+    );
+
+    await cargarTiposLesion();
+
+}
+
+
+/* ==========================================================
+   CAMBIO DEL TIPO DE LESIÓN
+========================================================== */
+
+async function manejarCambioTipoLesion() {
+
+    const tipoLesion =
+        campoTipoLesion?.value || "";
+
+    ocultarSubtipoLescah();
+
+    ocultarClasificacion();
+
+    if (!tipoLesion) {
+        return;
+    }
+
+    if (tipoLesion === TIPO_LESCAH) {
+
+        mostrarGrupo(
+            "grupoSubtipoLescah"
+        );
+
+        establecerCampoRequerido(
+            campoSubtipoLescah,
+            true
+        );
+
+        await cargarSubtiposLescah();
+
+        return;
+    }
+
+    const configuraciones = {
+
+        [TIPO_PRESION]: {
+            lista:
+                "CLASIFICACION_PRESION",
+
+            texto:
+                "Seleccione la clasificación por presión"
+        },
+
+        [TIPO_MARSI]: {
+            lista:
+                "CLASIFICACION_MARSI",
+
+            texto:
+                "Seleccione la clasificación MARSI"
+        },
+
+        [TIPO_DESGARRO]: {
+            lista:
+                "CLASIFICACION_DESGARRO",
+
+            texto:
+                "Seleccione la clasificación del desgarro"
+        },
+
+        [TIPO_FRICCION]: {
+            lista:
+                "CLASIFICACION_FRICCION",
+
+            texto:
+                "Seleccione la clasificación por fricción"
+        }
+
+    };
+
+    const configuracion =
+        configuraciones[tipoLesion];
+
+    if (!configuracion) {
+        return;
+    }
+
+    mostrarGrupo(
+        "grupoClasificacionLesion"
+    );
+
+    establecerCampoRequerido(
+        campoClasificacionLesion,
+        true
+    );
+
+    await cargarClasificacionLesion(
+        configuracion.lista,
+        configuracion.texto
+    );
+
+}
+
+
+/* ==========================================================
+   CAMBIO DEL SUBTIPO LESCAH
+========================================================== */
+
+async function manejarCambioSubtipoLescah() {
+
+    const subtipo =
+        campoSubtipoLescah?.value || "";
+
+    ocultarClasificacion();
+
+    if (subtipo !== SUBTIPO_DAI) {
+        return;
+    }
+
+    mostrarGrupo(
+        "grupoClasificacionLesion"
+    );
+
+    establecerCampoRequerido(
+        campoClasificacionLesion,
+        true
+    );
+
+    await cargarClasificacionLesion(
+        "CLASIFICACION_DAI",
+        "Seleccione la clasificación DAI"
+    );
+
+}
+
+
+/* ==========================================================
+   EVENTOS DEL FORMULARIO DINÁMICO
+========================================================== */
+
+if (campoEstadoPiel) {
+
+    campoEstadoPiel.addEventListener(
+        "change",
+        manejarCambioEstadoPiel
+    );
+
+}
+
+
+if (campoTipoLesion) {
+
+    campoTipoLesion.addEventListener(
+        "change",
+        manejarCambioTipoLesion
+    );
+
+}
+
+
+if (campoSubtipoLescah) {
+
+    campoSubtipoLescah.addEventListener(
+        "change",
+        manejarCambioSubtipoLescah
+    );
+
+}
+
+
+/* ==========================================================
    CONSTRUIR DATOS DEL FORMULARIO
 ========================================================== */
 
@@ -461,6 +806,11 @@ function obtenerDatosFormulario() {
                 ) || ""
             ).trim(),
 
+        riesgo:
+            String(
+                formData.get("riesgo") || ""
+            ).trim(),
+
         estadoPiel:
             String(
                 formData.get(
@@ -468,17 +818,24 @@ function obtenerDatosFormulario() {
                 ) || ""
             ).trim(),
 
-        complejidad:
+        tipoLesion:
             String(
                 formData.get(
-                    "complejidad"
+                    "tipoLesion"
                 ) || ""
             ).trim(),
 
-        presentaLesion:
+        subtipoLescah:
             String(
                 formData.get(
-                    "presentaLesion"
+                    "subtipoLescah"
+                ) || ""
+            ).trim(),
+
+        clasificacionLesion:
+            String(
+                formData.get(
+                    "clasificacionLesion"
                 ) || ""
             ).trim(),
 
@@ -505,7 +862,7 @@ function obtenerDatosFormulario() {
 
 
 /* ==========================================================
-   VALIDAR DATOS ESENCIALES
+   VALIDAR DATOS
 ========================================================== */
 
 function validarDatosFormulario(
@@ -515,7 +872,7 @@ function validarDatosFormulario(
     if (!datos.cama) {
 
         throw new Error(
-            "El número de cama es obligatorio."
+            "Seleccione el número de cama."
         );
 
     }
@@ -536,6 +893,14 @@ function validarDatosFormulario(
 
     }
 
+    if (!datos.riesgo) {
+
+        throw new Error(
+            "Seleccione el nivel de riesgo."
+        );
+
+    }
+
     if (!datos.estadoPiel) {
 
         throw new Error(
@@ -544,18 +909,37 @@ function validarDatosFormulario(
 
     }
 
-    if (!datos.complejidad) {
+    if (
+        datos.estadoPiel === ESTADO_LESION &&
+        !datos.tipoLesion
+    ) {
 
         throw new Error(
-            "Seleccione la complejidad del paciente."
+            "Seleccione el tipo de lesión."
         );
 
     }
 
-    if (!datos.presentaLesion) {
+    if (
+        datos.tipoLesion === TIPO_LESCAH &&
+        !datos.subtipoLescah
+    ) {
 
         throw new Error(
-            "Indique si el paciente presenta lesión."
+            "Seleccione la clasificación LESCAH."
+        );
+
+    }
+
+    if (
+        requiereClasificacion(
+            datos
+        ) &&
+        !datos.clasificacionLesion
+    ) {
+
+        throw new Error(
+            "Seleccione la clasificación de la lesión."
         );
 
     }
@@ -563,7 +947,7 @@ function validarDatosFormulario(
     if (!datos.registradoPor) {
 
         throw new Error(
-            "El nombre de quien realiza el registro es obligatorio."
+            "El responsable del registro es obligatorio."
         );
 
     }
@@ -571,8 +955,33 @@ function validarDatosFormulario(
 }
 
 
+function requiereClasificacion(datos) {
+
+    const tiposConClasificacion = [
+        TIPO_PRESION,
+        TIPO_MARSI,
+        TIPO_DESGARRO,
+        TIPO_FRICCION
+    ];
+
+    if (
+        tiposConClasificacion.includes(
+            datos.tipoLesion
+        )
+    ) {
+        return true;
+    }
+
+    return (
+        datos.tipoLesion === TIPO_LESCAH &&
+        datos.subtipoLescah === SUBTIPO_DAI
+    );
+
+}
+
+
 /* ==========================================================
-   PROCESAR PACIENTE E INGRESO UCI
+   PROCESAR PACIENTE E INGRESO
 ========================================================== */
 
 async function prepararPacienteEIngreso(
@@ -621,7 +1030,7 @@ async function prepararPacienteEIngreso(
 
 
 /* ==========================================================
-   REINICIAR FORMULARIO DESPUÉS DEL GUARDADO
+   REINICIAR FORMULARIO
 ========================================================== */
 
 function limpiarFormularioValoracion() {
@@ -641,6 +1050,8 @@ function limpiarFormularioValoracion() {
             false;
 
     }
+
+    reiniciarCamposLesion();
 
     actualizarFechaHoraRegistro();
 
@@ -699,14 +1110,20 @@ if (formValoracion) {
                         registradoPor:
                             datosFormulario.registradoPor,
 
+                        riesgo:
+                            datosFormulario.riesgo,
+
                         estadoPiel:
                             datosFormulario.estadoPiel,
 
-                        complejidad:
-                            datosFormulario.complejidad,
+                        tipoLesion:
+                            datosFormulario.tipoLesion,
 
-                        presentaLesion:
-                            datosFormulario.presentaLesion,
+                        subtipoLescah:
+                            datosFormulario.subtipoLescah,
+
+                        clasificacionLesion:
+                            datosFormulario.clasificacionLesion,
 
                         observaciones:
                             datosFormulario.observaciones
@@ -746,13 +1163,13 @@ if (formValoracion) {
             } catch (error) {
 
                 console.error(
-                    "❌ Error al preparar el registro:",
+                    "❌ Error al guardar la valoración:",
                     error
                 );
 
                 mostrarNotificacion(
                     error.message ||
-                    "No fue posible procesar el registro",
+                    "No fue posible guardar la valoración",
                     5000
                 );
 
@@ -769,7 +1186,7 @@ if (formValoracion) {
 
 
 /* ==========================================================
-   PRUEBA DE CONEXIÓN CON SUPABASE
+   PRUEBA DE CONEXIÓN
 ========================================================== */
 
 async function probarConexionSupabase() {
@@ -821,14 +1238,30 @@ async function probarConexionSupabase() {
    INICIALIZACIÓN
 ========================================================== */
 
-actualizarFechaEncabezado();
+async function inicializarAplicacion() {
 
-actualizarFechaHoraRegistro();
+    actualizarFechaEncabezado();
 
-mostrarVista("vistaInicio");
+    actualizarFechaHoraRegistro();
 
-probarConexionSupabase();
+    mostrarVista(
+        "vistaInicio"
+    );
 
-actualizarResumenInicio();
+    reiniciarCamposLesion();
 
-cargarCamas();
+    await Promise.all([
+        probarConexionSupabase(),
+        actualizarResumenInicio(),
+        cargarCamas(),
+        cargarCatalogosFormulario()
+    ]);
+
+    console.log(
+        "✅ SkinTrack UCI inicializado correctamente"
+    );
+
+}
+
+
+inicializarAplicacion();
