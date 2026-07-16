@@ -49,7 +49,7 @@ async function buscarIngresoActivo(pacienteId) {
             estado
         `)
         .eq("paciente_id", pacienteId)
-        .eq("estado", "activo")
+        .eq("estado", "ACTIVO")
         .is("fecha_egreso", null)
         .order("fecha_ingreso", {
             ascending: false
@@ -112,12 +112,14 @@ async function crearIngresoUCI({
     }
 
     const nuevoIngreso = {
-        paciente_id: pacienteId,
-        cama: camaNormalizada,
-        fecha_ingreso: new Date().toISOString(),
-        fecha_egreso: null,
-        estado: "activo"
-    };
+
+    paciente_id: pacienteId,
+    cama: camaNormalizada,
+    fecha_ingreso: new Date().toISOString(),
+    fecha_egreso: null,
+    estado: "ACTIVO"
+
+};
 
     const { data, error } = await supabaseClient
         .from("ingresos_uci")
