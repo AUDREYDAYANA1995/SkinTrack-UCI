@@ -345,118 +345,138 @@
 
 
                 <!-- ==================================================
-                     VALORACIÓN DE PIEL
-                =================================================== -->
+     VALORACIÓN DE PIEL
+=================================================== -->
 
-                <div class="form-section">
+<div class="form-section">
 
-                    <h3>
-                        Valoración de piel
-                    </h3>
-
-                    <div class="field">
-
-                        <label for="estadoPiel">
-                            Estado general de la piel
-                        </label>
-
-                        <select
-                            id="estadoPiel"
-                            name="estadoPiel"
-                            required
-                        >
-
-                            <option value="">
-                                Seleccione una opción
-                            </option>
-
-                            <option value="Íntegra">
-                                Íntegra
-                            </option>
-
-                            <option value="Alteración leve">
-                                Alteración leve
-                            </option>
-
-                            <option value="Alteración moderada">
-                                Alteración moderada
-                            </option>
-
-                            <option value="Alteración severa">
-                                Alteración severa
-                            </option>
-
-                        </select>
-
-                    </div>
+    <h3>
+        Valoración de piel
+    </h3>
 
 
-                    <div class="field">
+    <!-- Riesgo -->
 
-                        <label for="complejidad">
-                            Complejidad del paciente
-                        </label>
+    <div class="field">
 
-                        <select
-                            id="complejidad"
-                            name="complejidad"
-                            required
-                        >
+        <label for="riesgo">
+            Riesgo
+        </label>
 
-                            <option value="">
-                                Seleccione una opción
-                            </option>
+        <select
+            id="riesgo"
+            name="riesgo"
+            required
+            disabled
+        >
+            <option value="">
+                Cargando opciones...
+            </option>
+        </select>
 
-                            <option value="Baja">
-                                Baja
-                            </option>
-
-                            <option value="Media">
-                                Media
-                            </option>
-
-                            <option value="Alta">
-                                Alta
-                            </option>
-
-                            <option value="Crítica">
-                                Crítica
-                            </option>
-
-                        </select>
-
-                    </div>
+    </div>
 
 
-                    <div class="field">
+    <!-- Estado general de la piel -->
 
-                        <label for="presentaLesion">
-                            ¿Presenta lesión?
-                        </label>
+    <div class="field">
 
-                        <select
-                            id="presentaLesion"
-                            name="presentaLesion"
-                            required
-                        >
+        <label for="estadoPiel">
+            Estado general de la piel
+        </label>
 
-                            <option value="">
-                                Seleccione una opción
-                            </option>
+        <select
+            id="estadoPiel"
+            name="estadoPiel"
+            required
+            disabled
+        >
+            <option value="">
+                Cargando opciones...
+            </option>
+        </select>
 
-                            <option value="No">
-                                No
-                            </option>
+    </div>
 
-                            <option value="Sí">
-                                Sí
-                            </option>
 
-                        </select>
+    <!-- Tipo de lesión
+         Solo se mostrará cuando el estado sea "Lesión" -->
 
-                    </div>
+    <div
+        id="grupoTipoLesion"
+        class="field"
+        hidden
+    >
 
-                </div>
+        <label for="tipoLesion">
+            Tipo de lesión
+        </label>
+
+        <select
+            id="tipoLesion"
+            name="tipoLesion"
+            disabled
+        >
+            <option value="">
+                Seleccione un tipo de lesión
+            </option>
+        </select>
+
+    </div>
+
+
+    <!-- Subtipo LESCAH
+         Solo se mostrará cuando el tipo sea "LESCAH" -->
+
+    <div
+        id="grupoSubtipoLescah"
+        class="field"
+        hidden
+    >
+
+        <label for="subtipoLescah">
+            Clasificación LESCAH
+        </label>
+
+        <select
+            id="subtipoLescah"
+            name="subtipoLescah"
+            disabled
+        >
+            <option value="">
+                Seleccione una opción
+            </option>
+        </select>
+
+    </div>
+
+
+    <!-- Clasificación de la lesión
+         Las opciones cambiarán según el tipo seleccionado -->
+
+    <div
+        id="grupoClasificacionLesion"
+        class="field"
+        hidden
+    >
+
+        <label for="clasificacionLesion">
+            Clasificación de la lesión
+        </label>
+
+        <select
+            id="clasificacionLesion"
+            name="clasificacionLesion"
+            disabled
+        >
+            <option value="">
+                Seleccione una clasificación
+            </option>
+        </select>
+
+    </div>
+
+</div>
 
 
                 <!-- ==================================================
