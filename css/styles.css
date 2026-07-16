@@ -1036,3 +1036,60 @@ button {
 #grupoClasificacionLesion[hidden] {
     display: none !important;
 }
+/* ==========================================================
+   MEDIDAS PREVENTIVAS
+========================================================== */
+
+.section-help {
+    margin: -7px 0 15px;
+
+    color: var(--text-soft);
+
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.checkbox-list {
+    display: grid;
+    gap: 10px;
+}
+
+.checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 13px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 13px;
+
+    background: white;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.checkbox-option:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.checkbox-option input {
+    width: 19px;
+    height: 19px;
+
+    flex-shrink: 0;
+
+    accent-color: var(--primary);
+}
+
+.checkbox-option span {
+    color: var(--text);
+
+    font-size: 14px;
+    font-weight: 600;
+}
