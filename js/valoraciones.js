@@ -1,44 +1,205 @@
+"use strict";
+
+
 /* ==========================================================
    SkinTrack UCI
    Módulo de valoraciones
 ========================================================== */
 
 
+/* ==========================================================
+   NORMALIZACIÓN DE DATOS
+========================================================== */
+
 /**
- * Convierte el valor del formulario a booleano.
+ * Normaliza texto simple.
  *
- * @param {string|boolean} valor
- * @returns {boolean}
+ * @param {unknown} valor
+ * @returns {string}
  */
-function convertirPresentaLesionABooleano(valor) {
+function normalizarTextoValoracion(valor) {
 
-    if (typeof valor === "boolean") {
-        return valor;
-    }
+    return String(valor ?? "")
+        .trim()
+        .replace(/\s+/g, " ");
 
-    const valorNormalizado =
-        String(valor || "")
-            .trim()
-            .toLowerCase();
-
-    if (valorNormalizado === "sí" ||
-        valorNormalizado === "si" ||
-        valorNormalizado === "true") {
-
-        return true;
-    }
-
-    if (valorNormalizado === "no" ||
-        valorNormalizado === "false") {
-
-        return false;
-    }
-
-    throw new Error(
-        "El valor de presenta lesión no es válido."
-    );
 }
 
+
+/**
+ * Normaliza nombres propios o responsables.
+ *
+ * @param {unknown} valor
+ * @returns {string}
+ */
+function normalizarTextoMayuscula(valor) {
+
+    return normalizarTextoValoracion(valor)
+        .toUpperCase();
+
+}
+
+
+/* ==========================================================
+   VALIDACIONES CLÍNICAS
+========================================================== */
+
+/**
+ * Determina si el estado de piel corresponde a una lesión.
+ *
+ * @param {string} estadoPiel
+ * @returns {boolean}
+ */
+function estadoCorrespondeALesion(
+    estadoPiel
+) {
+
+    return normalizarTextoValoracion(
+        estadoPiel
+    ) === "Lesión";
+
+}
+
+
+/**
+ * Valida los datos clínicos antes de guardar.
+ *
+ * @param {Object} datos
+ */
+function validarValoracionClinica(datos) {
+
+    if (!datos.ingresoId) {
+
+        throw new Error(
+            "Se requiere el identificador del ingreso UCI."
+        );
+
+    }
+
+    if (!datos.cama) {
+
+        throw new Error(
+            "La cama es obligatoria."
+        );
+
+    }
+
+    if (!datos.registradoPor) {
+
+        throw new Error(
+            "El responsable del registro es obligatorio."
+        );
+
+    }
+
+    if (!datos.riesgo) {
+
+        throw new Error(
+            "El riesgo es obligatorio."
+        );
+
+    }
+
+    if (!datos.estadoPiel) {
+
+        throw new Error(
+            "El estado general de la piel es obligatorio."
+        );
+
+    }
+
+    if (
+        estadoCorrespondeALesion(
+            datos.estadoPiel
+        ) &&
+        !datos.tipoLesion
+    ) {
+
+        throw new Error(
+            "El tipo de lesión es obligatorio."
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   CONSTRUIR REGISTRO
+========================================================== */
+
+/**
+ * Construye el objeto que se enviará a Supabase.
+ *
+ * @param {Object} datos
+ * @returns {Object}
+ */
+function construirRegistroValoracion(datos) {
+
+    const hayLesion =
+        estadoCorrespondeALesion(
+            datos.estadoPiel
+        );
+
+    return {
+
+        ingreso_id:
+            datos.ingresoId,
+
+        cama:
+            normalizarTextoMayuscula(
+                datos.cama
+            ),
+
+        registrado_por:
+            normalizarTextoMayuscula(
+                datos.registradoPor
+            ),
+
+        riesgo:
+            normalizarTextoValoracion(
+                datos.riesgo
+            ),
+
+        estado_piel:
+            normalizarTextoValoracion(
+                datos.estadoPiel
+            ),
+
+        tipo_lesion:
+            hayLesion
+                ? normalizarTextoValoracion(
+                    datos.tipoLesion
+                ) || null
+                : null,
+
+        subtipo_lescah:
+            hayLesion
+                ? normalizarTextoValoracion(
+                    datos.subtipoLescah
+                ) || null
+                : null,
+
+        clasificacion_lesion:
+            hayLesion
+                ? normalizarTextoValoracion(
+                    datos.clasificacionLesion
+                ) || null
+                : null,
+
+        observaciones:
+            normalizarTextoValoracion(
+                datos.observaciones
+            ) || null
+
+    };
+
+}
+
+
+/* ==========================================================
+   GUARDAR VALORACIÓN
+========================================================== */
 
 /**
  * Guarda una valoración asociada a un ingreso UCI.
@@ -47,9 +208,11 @@ function convertirPresentaLesionABooleano(valor) {
  * @param {string} datos.ingresoId
  * @param {string} datos.cama
  * @param {string} datos.registradoPor
+ * @param {string} datos.riesgo
  * @param {string} datos.estadoPiel
- * @param {string} datos.complejidad
- * @param {string|boolean} datos.presentaLesion
+ * @param {string} datos.tipoLesion
+ * @param {string} datos.subtipoLescah
+ * @param {string} datos.clasificacionLesion
  * @param {string} datos.observaciones
  * @returns {Promise<Object>}
  */
@@ -57,86 +220,57 @@ async function guardarValoracion({
     ingresoId,
     cama,
     registradoPor,
+    riesgo,
     estadoPiel,
-    complejidad,
-    presentaLesion,
-    observaciones
+    tipoLesion = "",
+    subtipoLescah = "",
+    clasificacionLesion = "",
+    observaciones = ""
 }) {
 
-    if (!ingresoId) {
-        throw new Error(
-            "Se requiere el identificador del ingreso UCI."
-        );
-    }
+    const datosValoracion = {
 
-    if (!cama) {
-        throw new Error(
-            "La cama es obligatoria."
-        );
-    }
+        ingresoId,
+        cama,
+        registradoPor,
+        riesgo,
+        estadoPiel,
+        tipoLesion,
+        subtipoLescah,
+        clasificacionLesion,
+        observaciones
 
-    if (!registradoPor) {
-        throw new Error(
-            "El responsable del registro es obligatorio."
-        );
-    }
-
-    if (!estadoPiel) {
-        throw new Error(
-            "El estado de la piel es obligatorio."
-        );
-    }
-
-    if (!complejidad) {
-        throw new Error(
-            "La complejidad es obligatoria."
-        );
-    }
-
-    const nuevaValoracion = {
-
-        ingreso_id:
-            ingresoId,
-
-        cama:
-            String(cama).trim().toUpperCase(),
-
-        registrado_por:
-            String(registradoPor)
-                .trim()
-                .replace(/\s+/g, " ")
-                .toUpperCase(),
-
-        estado_piel:
-            String(estadoPiel).trim(),
-
-        complejidad:
-            String(complejidad).trim(),
-
-        presenta_lesion:
-            convertirPresentaLesionABooleano(
-                presentaLesion
-            ),
-
-        observaciones:
-            String(observaciones || "").trim() || null
     };
 
-    const { data, error } = await supabaseClient
-        .from("valoraciones")
-        .insert(nuevaValoracion)
-        .select(`
-            id,
-            ingreso_id,
-            cama,
-            registrado_por,
-            estado_piel,
-            complejidad,
-            presenta_lesion,
-            observaciones,
-            fecha_hora_registro
-        `)
-        .single();
+    validarValoracionClinica(
+        datosValoracion
+    );
+
+    const nuevaValoracion =
+        construirRegistroValoracion(
+            datosValoracion
+        );
+
+    const { data, error } =
+        await supabaseClient
+            .from("valoraciones")
+            .insert(
+                nuevaValoracion
+            )
+            .select(`
+                id,
+                ingreso_id,
+                cama,
+                registrado_por,
+                riesgo,
+                estado_piel,
+                tipo_lesion,
+                subtipo_lescah,
+                clasificacion_lesion,
+                observaciones,
+                fecha_hora_registro
+            `)
+            .single();
 
     if (error) {
 
@@ -148,6 +282,7 @@ async function guardarValoracion({
         throw new Error(
             "No fue posible guardar la valoración."
         );
+
     }
 
     console.log(
@@ -156,8 +291,13 @@ async function guardarValoracion({
     );
 
     return data;
+
 }
 
+
+/* ==========================================================
+   MÓDULO CARGADO
+========================================================== */
 
 console.log(
     "✅ Módulo de valoraciones cargado correctamente"
