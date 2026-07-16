@@ -953,4 +953,72 @@ button {
         gap: 0;
     }
 
+    /* ==========================================================
+   PACIENTES ACTIVOS
+========================================================== */
+
+.patients-list {
+    display: grid;
+    gap: 14px;
+}
+
+.patient-card {
+    background: #ffffff;
+    border: 1px solid #e6e9f0;
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 6px 18px rgba(8, 46, 155, 0.06);
+}
+
+.patient-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.patient-card-header h3 {
+    margin: 6px 0 0;
+    font-size: 1rem;
+    color: #182033;
+}
+
+.patient-bed {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #082e9b;
+    text-transform: uppercase;
+}
+
+.patient-status {
+    flex-shrink: 0;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.patient-status.completed {
+    background: #e8f7ee;
+    color: #18733c;
+}
+
+.patient-status.pending {
+    background: #fff3e4;
+    color: #a95c00;
+}
+
+.patient-card-data {
+    margin-top: 14px;
+    display: grid;
+    gap: 6px;
+}
+
+.patient-card-data p {
+    margin: 0;
+    font-size: 0.86rem;
+    color: #596174;
+}
+
 }
