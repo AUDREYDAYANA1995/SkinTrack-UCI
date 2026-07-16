@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <!-- SkinTrack UCI -->
+
 <head>
     <meta charset="UTF-8">
 
@@ -16,7 +18,10 @@
 
     <title>SkinTrack UCI</title>
 
-    <link rel="stylesheet" href="css/styles.css">
+    <link
+        rel="stylesheet"
+        href="css/styles.css"
+    >
 </head>
 
 <body>
@@ -30,15 +35,19 @@
         <header class="app-header">
 
             <div>
+
                 <p class="app-label">
                     Seguimiento clínico
                 </p>
 
-                <h1>SkinTrack UCI</h1>
+                <h1>
+                    SkinTrack UCI
+                </h1>
 
                 <p class="app-subtitle">
                     Sistema de valoración de piel
                 </p>
+
             </div>
 
             <div
@@ -62,9 +71,13 @@
 
             <div class="welcome">
 
-                <p>Resumen de la unidad</p>
+                <p>
+                    Resumen de la unidad
+                </p>
 
-                <h2>Estado de las valoraciones de hoy</h2>
+                <h2>
+                    Estado de las valoraciones de hoy
+                </h2>
 
             </div>
 
@@ -249,7 +262,9 @@
                         Registro clínico
                     </p>
 
-                    <h2>Nueva valoración</h2>
+                    <h2>
+                        Nueva valoración
+                    </h2>
 
                 </div>
 
@@ -258,9 +273,13 @@
 
             <form id="formValoracion">
 
+                <!-- Identificación del paciente -->
+
                 <div class="form-section">
 
-                    <h3>Identificación del paciente</h3>
+                    <h3>
+                        Identificación del paciente
+                    </h3>
 
                     <div class="form-grid">
 
@@ -323,9 +342,13 @@
                 </div>
 
 
+                <!-- Valoración de piel -->
+
                 <div class="form-section">
 
-                    <h3>Valoración de piel</h3>
+                    <h3>
+                        Valoración de piel
+                    </h3>
 
                     <div class="field">
 
@@ -432,9 +455,13 @@
                 </div>
 
 
+                <!-- Responsable del registro -->
+
                 <div class="form-section">
 
-                    <h3>Responsable del registro</h3>
+                    <h3>
+                        Responsable del registro
+                    </h3>
 
                     <div class="field">
 
@@ -458,7 +485,9 @@
 
                         <div>
 
-                            <span>Fecha</span>
+                            <span>
+                                Fecha
+                            </span>
 
                             <strong id="fechaRegistro">
                                 Automática
@@ -468,7 +497,9 @@
 
                         <div>
 
-                            <span>Hora</span>
+                            <span>
+                                Hora
+                            </span>
 
                             <strong id="horaRegistro">
                                 Automática
@@ -535,7 +566,9 @@
                         Seguimiento
                     </p>
 
-                    <h2>Pacientes activos</h2>
+                    <h2>
+                        Pacientes activos
+                    </h2>
 
                 </div>
 
@@ -562,10 +595,12 @@
                     P
                 </div>
 
-                <h3>No hay pacientes cargados</h3>
+                <h3>
+                    No hay pacientes cargados
+                </h3>
 
                 <p>
-                    Cuando conectemos Supabase, los pacientes activos aparecerán aquí.
+                    Los pacientes con ingreso activo aparecerán aquí.
                 </p>
 
             </div>
@@ -599,7 +634,9 @@
                         Indicadores
                     </p>
 
-                    <h2>Estadísticas</h2>
+                    <h2>
+                        Estadísticas
+                    </h2>
 
                 </div>
 
@@ -682,10 +719,12 @@
 
             <div class="chart-placeholder">
 
-                <h3>Estado general de la piel</h3>
+                <h3>
+                    Estado general de la piel
+                </h3>
 
                 <p>
-                    Aquí se mostrará la gráfica cuando conectemos la base de datos.
+                    Aquí se mostrará la gráfica cuando existan valoraciones registradas.
                 </p>
 
             </div>
@@ -771,9 +810,13 @@
     </main>
 
 
+    <!-- Notificaciones -->
+
     <div
         id="notification"
         class="notification"
+        role="status"
+        aria-live="polite"
     ></div>
 
 
@@ -787,21 +830,28 @@
     <!-- Configuración y conexión con Supabase -->
     <script src="js/config.js"></script>
 
+
     <!-- ==================================================
          MÓDULOS DEL SISTEMA
     =================================================== -->
 
-    <!-- Módulo de pacientes -->
+    <!-- Gestión de pacientes -->
     <script src="js/pacientes.js"></script>
 
-    <!-- Módulos que agregaremos después -->
-    <!-- <script src="js/ingresos.js"></script> -->
+    <!-- Gestión de ingresos UCI -->
+    <script src="js/ingresos.js"></script>
+
+    <!-- Módulos que se agregarán posteriormente -->
     <!-- <script src="js/valoraciones.js"></script> -->
     <!-- <script src="js/dashboard.js"></script> -->
     <!-- <script src="js/listas.js"></script> -->
     <!-- <script src="js/utils.js"></script> -->
 
-    <!-- Aplicación principal -->
+
+    <!-- ==================================================
+         APLICACIÓN PRINCIPAL
+    =================================================== -->
+
     <script src="js/app.js"></script>
 
 </body>
