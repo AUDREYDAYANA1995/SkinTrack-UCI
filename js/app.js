@@ -830,3 +830,5 @@ mostrarVista("vistaInicio");
 probarConexionSupabase();
 
 actualizarResumenInicio();
+
+cargarCamas();
