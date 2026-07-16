@@ -40,6 +40,34 @@ function normalizarTextoMayuscula(valor) {
 }
 
 
+/**
+ * Convierte cualquier valor compatible a booleano.
+ *
+ * @param {unknown} valor
+ * @returns {boolean}
+ */
+function normalizarBooleano(valor) {
+
+    if (typeof valor === "boolean") {
+        return valor;
+    }
+
+    const valorNormalizado =
+        String(valor ?? "")
+            .trim()
+            .toLowerCase();
+
+    return [
+        "true",
+        "1",
+        "sí",
+        "si",
+        "yes"
+    ].includes(valorNormalizado);
+
+}
+
+
 /* ==========================================================
    VALIDACIONES CLÍNICAS
 ========================================================== */
@@ -57,6 +85,24 @@ function estadoCorrespondeALesion(
     return normalizarTextoValoracion(
         estadoPiel
     ) === "Lesión";
+
+}
+
+
+/**
+ * Determina si se seleccionó al menos una medida preventiva.
+ *
+ * @param {Object} datos
+ * @returns {boolean}
+ */
+function tieneMedidaPreventiva(datos) {
+
+    return Boolean(
+        datos.cambioPosicion ||
+        datos.linovera ||
+        datos.apositoLiberacion ||
+        datos.barreraProteccion
+    );
 
 }
 
@@ -117,6 +163,14 @@ function validarValoracionClinica(datos) {
 
         throw new Error(
             "El tipo de lesión es obligatorio."
+        );
+
+    }
+
+    if (!tieneMedidaPreventiva(datos)) {
+
+        throw new Error(
+            "Debe seleccionar al menos una medida preventiva."
         );
 
     }
@@ -187,6 +241,26 @@ function construirRegistroValoracion(datos) {
                 ) || null
                 : null,
 
+        cambio_posicion:
+            normalizarBooleano(
+                datos.cambioPosicion
+            ),
+
+        linovera:
+            normalizarBooleano(
+                datos.linovera
+            ),
+
+        aposito_liberacion:
+            normalizarBooleano(
+                datos.apositoLiberacion
+            ),
+
+        barrera_proteccion:
+            normalizarBooleano(
+                datos.barreraProteccion
+            ),
+
         observaciones:
             normalizarTextoValoracion(
                 datos.observaciones
@@ -213,6 +287,10 @@ function construirRegistroValoracion(datos) {
  * @param {string} datos.tipoLesion
  * @param {string} datos.subtipoLescah
  * @param {string} datos.clasificacionLesion
+ * @param {boolean} datos.cambioPosicion
+ * @param {boolean} datos.linovera
+ * @param {boolean} datos.apositoLiberacion
+ * @param {boolean} datos.barreraProteccion
  * @param {string} datos.observaciones
  * @returns {Promise<Object>}
  */
@@ -225,6 +303,10 @@ async function guardarValoracion({
     tipoLesion = "",
     subtipoLescah = "",
     clasificacionLesion = "",
+    cambioPosicion = false,
+    linovera = false,
+    apositoLiberacion = false,
+    barreraProteccion = false,
     observaciones = ""
 }) {
 
@@ -238,6 +320,10 @@ async function guardarValoracion({
         tipoLesion,
         subtipoLescah,
         clasificacionLesion,
+        cambioPosicion,
+        linovera,
+        apositoLiberacion,
+        barreraProteccion,
         observaciones
 
     };
@@ -267,6 +353,10 @@ async function guardarValoracion({
                 tipo_lesion,
                 subtipo_lescah,
                 clasificacion_lesion,
+                cambio_posicion,
+                linovera,
+                aposito_liberacion,
+                barrera_proteccion,
                 observaciones,
                 fecha_hora_registro
             `)
