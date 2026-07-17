@@ -127,6 +127,7 @@ function mostrarVista(viewId) {
         );
 
         return;
+
     }
 
     views.forEach((view) => {
@@ -181,8 +182,25 @@ navigationButtons.forEach((button) => {
         "click",
         () => {
 
+            const vistaDestino =
+                button.dataset.view;
+
+            /*
+             * Cuando se abre Nueva valoración desde Inicio
+             * o desde la navegación inferior, se prepara
+             * un formulario independiente.
+             */
+            if (
+                vistaDestino ===
+                "vistaValoracion"
+            ) {
+
+                prepararNuevaValoracionGeneral();
+
+            }
+
             mostrarVista(
-                button.dataset.view
+                vistaDestino
             );
 
         }
@@ -203,7 +221,9 @@ function actualizarFechaEncabezado() {
         );
 
     if (!fechaActual) {
+
         return;
+
     }
 
     const ahora =
@@ -283,7 +303,9 @@ function mostrarNotificacion(
 ) {
 
     if (!notification) {
+
         return;
+
     }
 
     notification.textContent =
@@ -317,7 +339,9 @@ function establecerEstadoGuardado(
         guardando;
 
     if (!botonGuardar) {
+
         return;
+
     }
 
     botonGuardar.disabled =
@@ -332,9 +356,71 @@ function establecerEstadoGuardado(
 
 
 /* ==========================================================
-   PACIENTE ACTUAL
+   IDENTIFICACIÓN DEL PACIENTE
 ========================================================== */
 
+/**
+ * Desbloquea los campos de identificación.
+ */
+function desbloquearIdentificacionPaciente() {
+
+    if (campoCama) {
+
+        campoCama.disabled =
+            false;
+
+    }
+
+    if (campoCedula) {
+
+        campoCedula.readOnly =
+            false;
+
+    }
+
+    if (campoNombrePaciente) {
+
+        campoNombrePaciente.readOnly =
+            false;
+
+    }
+
+}
+
+
+/**
+ * Bloquea los campos cuando la valoración se inicia
+ * desde la ficha de un paciente activo.
+ */
+function bloquearIdentificacionPaciente() {
+
+    if (campoCama) {
+
+        campoCama.disabled =
+            true;
+
+    }
+
+    if (campoCedula) {
+
+        campoCedula.readOnly =
+            true;
+
+    }
+
+    if (campoNombrePaciente) {
+
+        campoNombrePaciente.readOnly =
+            true;
+
+    }
+
+}
+
+
+/**
+ * Reinicia únicamente el paciente consultado.
+ */
 function reiniciarPacienteActual() {
 
     pacienteEncontradoActual =
@@ -353,6 +439,130 @@ function reiniciarPacienteActual() {
 }
 
 
+/**
+ * Prepara una valoración general.
+ *
+ * Se utiliza cuando el formulario se abre desde Inicio
+ * o desde la navegación inferior.
+ */
+function prepararNuevaValoracionGeneral() {
+
+    formularioDesdeFicha =
+        false;
+
+    ingresoSeleccionadoActual =
+        null;
+
+    pacienteEncontradoActual =
+        null;
+
+    if (formValoracion) {
+
+        formValoracion.reset();
+
+    }
+
+    desbloquearIdentificacionPaciente();
+
+    reiniciarCamposLesion();
+
+    actualizarFechaHoraRegistro();
+
+}
+
+
+/**
+ * Abre el formulario para registrar una nueva valoración
+ * a un paciente que ya tiene un ingreso UCI activo.
+ *
+ * Esta función puede ser llamada desde dashboard.js.
+ *
+ * @param {Object} ingreso
+ */
+function abrirValoracionDesdeFicha(
+    ingreso
+) {
+
+    if (!ingreso?.id) {
+
+        mostrarNotificacion(
+            "No se encontró el ingreso activo del paciente"
+        );
+
+        return;
+
+    }
+
+    const paciente =
+        ingreso.pacientes || {};
+
+    if (!paciente?.id) {
+
+        mostrarNotificacion(
+            "No se encontró la información del paciente"
+        );
+
+        return;
+
+    }
+
+    formularioDesdeFicha =
+        true;
+
+    ingresoSeleccionadoActual =
+        ingreso;
+
+    pacienteEncontradoActual =
+        paciente;
+
+    if (formValoracion) {
+
+        formValoracion.reset();
+
+    }
+
+    reiniciarCamposLesion();
+
+    if (campoCama) {
+
+        campoCama.value =
+            ingreso.cama || "";
+
+    }
+
+    if (campoCedula) {
+
+        campoCedula.value =
+            paciente.cedula || "";
+
+    }
+
+    if (campoNombrePaciente) {
+
+        campoNombrePaciente.value =
+            paciente.nombre || "";
+
+    }
+
+    bloquearIdentificacionPaciente();
+
+    actualizarFechaHoraRegistro();
+
+    mostrarVista(
+        "vistaValoracion"
+    );
+
+    console.log(
+        "✅ Nueva valoración iniciada para paciente existente:",
+        {
+            paciente,
+            ingreso
+        }
+    );
+
+}
+
+
 /* ==========================================================
    BÚSQUEDA AUTOMÁTICA DEL PACIENTE
 ========================================================== */
@@ -363,7 +573,15 @@ async function consultarPacienteEscrito() {
         !campoCedula ||
         !campoNombrePaciente
     ) {
+
         return;
+
+    }
+
+    if (formularioDesdeFicha) {
+
+        return;
+
     }
 
     const cedula =
@@ -374,6 +592,7 @@ async function consultarPacienteEscrito() {
         reiniciarPacienteActual();
 
         return;
+
     }
 
     try {
@@ -447,6 +666,12 @@ if (
         "input",
         function () {
 
+            if (formularioDesdeFicha) {
+
+                return;
+
+            }
+
             window.clearTimeout(
                 temporizadorBusquedaPaciente
             );
@@ -465,6 +690,7 @@ if (
                 reiniciarPacienteActual();
 
                 return;
+
             }
 
             temporizadorBusquedaPaciente =
@@ -509,7 +735,9 @@ function establecerCampoRequerido(
 ) {
 
     if (!campo) {
+
         return;
+
     }
 
     campo.required =
@@ -591,7 +819,9 @@ async function manejarCambioEstadoPiel() {
     ocultarClasificacion();
 
     if (estado !== ESTADO_LESION) {
+
         return;
+
     }
 
     mostrarGrupo(
@@ -622,7 +852,9 @@ async function manejarCambioTipoLesion() {
     ocultarClasificacion();
 
     if (!tipoLesion) {
+
         return;
+
     }
 
     if (tipoLesion === TIPO_LESCAH) {
@@ -639,6 +871,7 @@ async function manejarCambioTipoLesion() {
         await cargarSubtiposLescah();
 
         return;
+
     }
 
     const configuraciones = {
@@ -689,7 +922,9 @@ async function manejarCambioTipoLesion() {
         configuraciones[tipoLesion];
 
     if (!configuracion) {
+
         return;
+
     }
 
     mostrarGrupo(
@@ -721,7 +956,9 @@ async function manejarCambioSubtipoLescah() {
     ocultarClasificacion();
 
     if (subtipo !== SUBTIPO_DAI) {
+
         return;
+
     }
 
     mostrarGrupo(
@@ -823,24 +1060,38 @@ function obtenerDatosFormulario() {
             formData
         );
 
+    /*
+     * Los campos deshabilitados no se incluyen en FormData.
+     * Por eso usamos directamente su valor como respaldo.
+     */
+    const cama =
+        String(
+            formData.get("cama") ||
+            campoCama?.value ||
+            ""
+        ).trim();
+
+    const cedula =
+        String(
+            formData.get("cedula") ||
+            campoCedula?.value ||
+            ""
+        ).trim();
+
+    const nombrePaciente =
+        String(
+            formData.get("nombrePaciente") ||
+            campoNombrePaciente?.value ||
+            ""
+        ).trim();
+
     return {
 
-        cama:
-            String(
-                formData.get("cama") || ""
-            ).trim(),
+        cama,
 
-        cedula:
-            String(
-                formData.get("cedula") || ""
-            ).trim(),
+        cedula,
 
-        nombrePaciente:
-            String(
-                formData.get(
-                    "nombrePaciente"
-                ) || ""
-            ).trim(),
+        nombrePaciente,
 
         riesgo:
             String(
@@ -1030,13 +1281,17 @@ function validarDatosFormulario(
    VALIDAR SI REQUIERE CLASIFICACIÓN
 ========================================================== */
 
-function requiereClasificacion(datos) {
+function requiereClasificacion(
+    datos
+) {
 
     const tiposConClasificacion = [
+
         TIPO_PRESION,
         TIPO_MARSI,
         TIPO_DESGARRO,
         TIPO_FRICCION
+
     ];
 
     if (
@@ -1064,6 +1319,33 @@ function requiereClasificacion(datos) {
 async function prepararPacienteEIngreso(
     datosFormulario
 ) {
+
+    /*
+     * Cuando la valoración se abrió desde una ficha,
+     * se reutilizan el paciente y el ingreso ya seleccionados.
+     */
+    if (
+        formularioDesdeFicha &&
+        pacienteEncontradoActual?.id &&
+        ingresoSeleccionadoActual?.id
+    ) {
+
+        console.log(
+            "✅ Se utilizará el ingreso activo seleccionado:",
+            ingresoSeleccionadoActual
+        );
+
+        return {
+
+            paciente:
+                pacienteEncontradoActual,
+
+            ingreso:
+                ingresoSeleccionadoActual
+
+        };
+
+    }
 
     const paciente =
         pacienteEncontradoActual ||
@@ -1098,6 +1380,12 @@ async function prepararPacienteEIngreso(
         ingreso
     );
 
+    pacienteEncontradoActual =
+        paciente;
+
+    ingresoSeleccionadoActual =
+        ingreso;
+
     return {
         paciente,
         ingreso
@@ -1113,7 +1401,9 @@ async function prepararPacienteEIngreso(
 function limpiarFormularioValoracion() {
 
     if (!formValoracion) {
+
         return;
+
     }
 
     formValoracion.reset();
@@ -1121,12 +1411,13 @@ function limpiarFormularioValoracion() {
     pacienteEncontradoActual =
         null;
 
-    if (campoNombrePaciente) {
+    ingresoSeleccionadoActual =
+        null;
 
-        campoNombrePaciente.readOnly =
-            false;
+    formularioDesdeFicha =
+        false;
 
-    }
+    desbloquearIdentificacionPaciente();
 
     reiniciarCamposLesion();
 
@@ -1148,7 +1439,9 @@ if (formValoracion) {
             event.preventDefault();
 
             if (guardandoFormulario) {
+
                 return;
+
             }
 
             establecerEstadoGuardado(
@@ -1184,7 +1477,8 @@ if (formValoracion) {
                             ingreso.id,
 
                         cama:
-                            ingreso.cama,
+                            ingreso.cama ||
+                            datosFormulario.cama,
 
                         registradoPor:
                             datosFormulario.registradoPor,
