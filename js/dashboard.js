@@ -501,6 +501,11 @@ function renderizarResultadosPacientes(
                         ? "completed"
                         : "pending";
 
+                const ingresoId =
+                    escaparHTML(
+                        ingreso.id || ""
+                    );
+
                 const cama =
                     escaparHTML(
                         ingreso.cama || "—"
@@ -519,7 +524,12 @@ function renderizarResultadosPacientes(
                     );
 
                 return `
-                    <article class="patient-card">
+                    <button
+                        type="button"
+                        class="patient-card"
+                        data-ingreso-id="${ingresoId}"
+                        aria-label="Abrir ficha de ${nombre}"
+                    >
 
                         <div class="patient-card-header">
 
@@ -566,7 +576,14 @@ function renderizarResultadosPacientes(
 
                         </div>
 
-                    </article>
+                        <span
+                            class="patient-card-arrow"
+                            aria-hidden="true"
+                        >
+                            ›
+                        </span>
+
+                    </button>
                 `;
 
             })
