@@ -1134,9 +1134,9 @@ function obtenerDatosFormulario() {
                 "Cambio de posición"
             ),
 
-        linovera:
+        acidosGrasosHiperoxigenados:
             medidasPreventivas.includes(
-                "Linovera"
+                "Ácidos grasos hiperoxigenados"
             ),
 
         apositoLiberacion:
@@ -1148,6 +1148,18 @@ function obtenerDatosFormulario() {
             medidasPreventivas.includes(
                 "Barrera de protección"
             ),
+
+        toallasRemovedoras:
+            medidasPreventivas.includes(
+                "Toallas removedoras"
+            ),
+
+        usoPanal:
+            String(
+                formData.get(
+                    "usoPanal"
+                ) || ""
+            ).trim(),
 
         registradoPor:
             String(
