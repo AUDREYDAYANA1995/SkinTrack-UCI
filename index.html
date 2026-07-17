@@ -712,7 +712,204 @@
 
         </section>
 
+<!-- ==================================================
+     FICHA DEL PACIENTE
+=================================================== -->
 
+<section
+    id="vistaDetallePaciente"
+    class="view"
+>
+
+    <div class="section-header">
+
+        <button
+            type="button"
+            class="back-button"
+            data-view="vistaPacientes"
+            aria-label="Volver a pacientes activos"
+        >
+            ‹
+        </button>
+
+        <div>
+
+            <p class="section-label">
+                Seguimiento individual
+            </p>
+
+            <h2>
+                Ficha del paciente
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <article class="patient-detail-card">
+
+        <div class="patient-detail-heading">
+
+            <div class="patient-avatar">
+                P
+            </div>
+
+            <div>
+
+                <span
+                    id="detalleEstadoPaciente"
+                    class="patient-detail-status pending"
+                >
+                    Pendiente de valoración
+                </span>
+
+                <h3 id="detalleNombrePaciente">
+                    Paciente
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="patient-detail-grid">
+
+            <div class="patient-detail-item">
+
+                <span>
+                    Cama
+                </span>
+
+                <strong id="detalleCamaPaciente">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="patient-detail-item">
+
+                <span>
+                    Cédula
+                </span>
+
+                <strong id="detalleCedulaPaciente">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="patient-detail-item full-width">
+
+                <span>
+                    Fecha de ingreso
+                </span>
+
+                <strong id="detalleFechaIngreso">
+                    —
+                </strong>
+
+            </div>
+
+        </div>
+
+    </article>
+
+
+    <section class="patient-actions">
+
+        <button
+            type="button"
+            id="btnRealizarValoracionPaciente"
+            class="patient-action-button primary"
+        >
+
+            <span class="patient-action-icon">
+                +
+            </span>
+
+            <span>
+
+                <strong>
+                    Realizar valoración
+                </strong>
+
+                <small>
+                    Registrar la valoración de piel de hoy
+                </small>
+
+            </span>
+
+            <span class="arrow">
+                ›
+            </span>
+
+        </button>
+
+
+        <button
+            type="button"
+            id="btnHistorialPaciente"
+            class="patient-action-button"
+        >
+
+            <span class="patient-action-icon">
+                H
+            </span>
+
+            <span>
+
+                <strong>
+                    Ver historial
+                </strong>
+
+                <small>
+                    Consultar valoraciones anteriores
+                </small>
+
+            </span>
+
+            <span class="arrow">
+                ›
+            </span>
+
+        </button>
+
+
+        <button
+            type="button"
+            id="btnEgresoPaciente"
+            class="patient-action-button danger"
+        >
+
+            <span class="patient-action-icon">
+                E
+            </span>
+
+            <span>
+
+                <strong>
+                    Dar egreso
+                </strong>
+
+                <small>
+                    Finalizar el ingreso activo en UCI
+                </small>
+
+            </span>
+
+            <span class="arrow">
+                ›
+            </span>
+
+        </button>
+
+    </section>
+
+</section>
+        
         <!-- ==================================================
              ESTADÍSTICAS
         =================================================== -->
