@@ -1514,14 +1514,21 @@ if (formValoracion) {
                         cambioPosicion:
                             datosFormulario.cambioPosicion,
 
-                        linovera:
-                            datosFormulario.linovera,
+                        acidosGrasosHiperoxigenados:
+                            datosFormulario
+                                .acidosGrasosHiperoxigenados,
 
                         apositoLiberacion:
                             datosFormulario.apositoLiberacion,
 
                         barreraProteccion:
                             datosFormulario.barreraProteccion,
+
+                        toallasRemovedoras:
+                            datosFormulario.toallasRemovedoras,
+
+                        usoPanal:
+                            datosFormulario.usoPanal,
 
                         observaciones:
                             datosFormulario.observaciones
@@ -1583,7 +1590,6 @@ if (formValoracion) {
     );
 
 }
-
 
 /* ==========================================================
    PRUEBA DE CONEXIÓN
