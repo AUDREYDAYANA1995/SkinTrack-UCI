@@ -73,7 +73,7 @@ const ESTADO_LESION =
     "Lesión";
 
 const TIPO_PRESION =
-    "Lesión por presión";
+    "Presión";
 
 const TIPO_LESCAH =
     "LESCAH";
@@ -89,7 +89,6 @@ const TIPO_FRICCION =
 
 const SUBTIPO_DAI =
     "DAI (Dermatitis asociada a la incontinencia)";
-
 
 /* ==========================================================
    ESTADO TEMPORAL
