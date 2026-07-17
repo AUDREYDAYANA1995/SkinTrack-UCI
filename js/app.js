@@ -359,9 +359,6 @@ function establecerEstadoGuardado(
    IDENTIFICACIÓN DEL PACIENTE
 ========================================================== */
 
-/**
- * Desbloquea los campos de identificación.
- */
 function desbloquearIdentificacionPaciente() {
 
     if (campoCama) {
@@ -388,10 +385,6 @@ function desbloquearIdentificacionPaciente() {
 }
 
 
-/**
- * Bloquea los campos cuando la valoración se inicia
- * desde la ficha de un paciente activo.
- */
 function bloquearIdentificacionPaciente() {
 
     if (campoCama) {
@@ -418,9 +411,6 @@ function bloquearIdentificacionPaciente() {
 }
 
 
-/**
- * Reinicia únicamente el paciente consultado.
- */
 function reiniciarPacienteActual() {
 
     pacienteEncontradoActual =
@@ -439,13 +429,7 @@ function reiniciarPacienteActual() {
 }
 
 
-/**
- * Prepara una valoración general.
- *
- * Se utiliza cuando el formulario se abre desde Inicio
- * o desde la navegación inferior.
- */
-function prepararNuevaValoracionGeneral() {
+async function prepararNuevaValoracionGeneral() {
 
     formularioDesdeFicha =
         false;
@@ -466,20 +450,16 @@ function prepararNuevaValoracionGeneral() {
 
     reiniciarCamposLesion();
 
+    await cargarCamas();
+
+    await cargarCatalogosFormulario();
+
     actualizarFechaHoraRegistro();
 
 }
 
 
-/**
- * Abre el formulario para registrar una nueva valoración
- * a un paciente que ya tiene un ingreso UCI activo.
- *
- * Esta función puede ser llamada desde dashboard.js.
- *
- * @param {Object} ingreso
- */
-function abrirValoracionDesdeFicha(
+async function abrirValoracionDesdeFicha(
     ingreso
 ) {
 
@@ -521,12 +501,18 @@ function abrirValoracionDesdeFicha(
 
     }
 
+    desbloquearIdentificacionPaciente();
+
     reiniciarCamposLesion();
+
+    await cargarCamas();
+
+    await cargarCatalogosFormulario();
 
     if (campoCama) {
 
         campoCama.value =
-            ingreso.cama || "";
+            String(ingreso.cama || "");
 
     }
 
@@ -561,7 +547,6 @@ function abrirValoracionDesdeFicha(
     );
 
 }
-
 
 /* ==========================================================
    BÚSQUEDA AUTOMÁTICA DEL PACIENTE
