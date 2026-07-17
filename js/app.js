@@ -441,7 +441,13 @@ function reiniciarPacienteActual() {
 }
 
 
-async function prepararNuevaValoracionGeneral() {
+/**
+ * Prepara una valoración general.
+ *
+ * Se utiliza cuando el formulario se abre desde Inicio
+ * o desde la navegación inferior.
+ */
+function prepararNuevaValoracionGeneral() {
 
     formularioDesdeFicha =
         false;
@@ -462,16 +468,18 @@ async function prepararNuevaValoracionGeneral() {
 
     reiniciarCamposLesion();
 
-    await cargarCamas();
-
-    await cargarCatalogosFormulario();
-
     actualizarFechaHoraRegistro();
 
 }
 
 
-async function abrirValoracionDesdeFicha(
+/**
+ * Abre el formulario para registrar una nueva valoración
+ * a un paciente que ya tiene un ingreso UCI activo.
+ *
+ * @param {Object} ingreso
+ */
+function abrirValoracionDesdeFicha(
     ingreso
 ) {
 
@@ -513,15 +521,12 @@ async function abrirValoracionDesdeFicha(
 
     }
 
-    desbloquearIdentificacionPaciente();
-
     reiniciarCamposLesion();
 
-    await cargarCamas();
-
-    await cargarCatalogosFormulario();
-
     if (campoCama) {
+
+        campoCama.disabled =
+            false;
 
         campoCama.value =
             String(ingreso.cama || "");
