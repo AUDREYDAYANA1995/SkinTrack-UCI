@@ -101,6 +101,12 @@ let temporizadorBusquedaPaciente =
 let pacienteEncontradoActual =
     null;
 
+let ingresoSeleccionadoActual =
+    null;
+
+let formularioDesdeFicha =
+    false;
+
 let guardandoFormulario =
     false;
 
