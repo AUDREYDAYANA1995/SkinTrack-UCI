@@ -186,19 +186,32 @@ navigationButtons.forEach((button) => {
                 button.dataset.view;
 
             /*
-             * Cuando se abre Nueva valoración desde Inicio
-             * o desde la navegación inferior, se prepara
-             * un formulario independiente.
+             * El botón de la ficha tiene su propia lógica en
+             * ficha_paciente.js y no debe reiniciar el formulario.
+             */
+            const esBotonValoracionDesdeFicha =
+                button.id ===
+                "btnRealizarValoracionPaciente";
+
+            /*
+             * Solo se limpia el formulario cuando Nueva valoración
+             * se abre desde Inicio o desde la navegación general.
              */
             if (
                 vistaDestino ===
-                "vistaValoracion"
+                    "vistaValoracion" &&
+                !esBotonValoracionDesdeFicha
             ) {
 
                 prepararNuevaValoracionGeneral();
 
             }
 
+            /*
+             * La vista se abre normalmente. Cuando viene desde la
+             * ficha, los datos ya fueron cargados mediante
+             * abrirValoracionDesdeFicha().
+             */
             mostrarVista(
                 vistaDestino
             );
@@ -207,7 +220,6 @@ navigationButtons.forEach((button) => {
     );
 
 });
-
 
 /* ==========================================================
    FECHA ACTUAL DEL ENCABEZADO
