@@ -257,21 +257,26 @@ if (botonRealizarValoracion) {
         "click",
         function () {
 
-            if (!ingresoPacienteSeleccionado) {
+            if (!ingresoPacienteSeleccionado?.id) {
 
                 mostrarNotificacion(
                     "Seleccione primero un paciente"
                 );
 
                 return;
+
             }
+
+            abrirValoracionDesdeFicha(
+                ingresoPacienteSeleccionado
+            );
 
             mostrarNotificacion(
                 "Paciente seleccionado para valoración"
             );
 
             console.log(
-                "Paciente preparado para valoración:",
+                "✅ Paciente preparado para valoración:",
                 ingresoPacienteSeleccionado
             );
 
