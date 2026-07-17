@@ -99,9 +99,10 @@ function tieneMedidaPreventiva(datos) {
 
     return Boolean(
         datos.cambioPosicion ||
-        datos.linovera ||
+        datos.acidosGrasosHiperoxigenados ||
         datos.apositoLiberacion ||
-        datos.barreraProteccion
+        datos.barreraProteccion ||
+        datos.toallasRemovedoras
     );
 
 }
@@ -171,6 +172,20 @@ function validarValoracionClinica(datos) {
 
         throw new Error(
             "Debe seleccionar al menos una medida preventiva."
+        );
+
+    }
+
+    if (
+        !["Sí", "No"].includes(
+            normalizarTextoValoracion(
+                datos.usoPanal
+            )
+        )
+    ) {
+
+        throw new Error(
+            "Debe indicar si el paciente usa pañal."
         );
 
     }
@@ -246,9 +261,9 @@ function construirRegistroValoracion(datos) {
                 datos.cambioPosicion
             ),
 
-        linovera:
+        acidos_grasos_hiperoxigenados:
             normalizarBooleano(
-                datos.linovera
+                datos.acidosGrasosHiperoxigenados
             ),
 
         aposito_liberacion:
@@ -259,6 +274,16 @@ function construirRegistroValoracion(datos) {
         barrera_proteccion:
             normalizarBooleano(
                 datos.barreraProteccion
+            ),
+
+        toallas_removedoras:
+            normalizarBooleano(
+                datos.toallasRemovedoras
+            ),
+
+        uso_panal:
+            normalizarTextoValoracion(
+                datos.usoPanal
             ),
 
         observaciones:
@@ -288,9 +313,11 @@ function construirRegistroValoracion(datos) {
  * @param {string} datos.subtipoLescah
  * @param {string} datos.clasificacionLesion
  * @param {boolean} datos.cambioPosicion
- * @param {boolean} datos.linovera
+ * @param {boolean} datos.acidosGrasosHiperoxigenados
  * @param {boolean} datos.apositoLiberacion
  * @param {boolean} datos.barreraProteccion
+ * @param {boolean} datos.toallasRemovedoras
+ * @param {string} datos.usoPanal
  * @param {string} datos.observaciones
  * @returns {Promise<Object>}
  */
@@ -304,9 +331,11 @@ async function guardarValoracion({
     subtipoLescah = "",
     clasificacionLesion = "",
     cambioPosicion = false,
-    linovera = false,
+    acidosGrasosHiperoxigenados = false,
     apositoLiberacion = false,
     barreraProteccion = false,
+    toallasRemovedoras = false,
+    usoPanal = "",
     observaciones = ""
 }) {
 
@@ -321,9 +350,11 @@ async function guardarValoracion({
         subtipoLescah,
         clasificacionLesion,
         cambioPosicion,
-        linovera,
+        acidosGrasosHiperoxigenados,
         apositoLiberacion,
         barreraProteccion,
+        toallasRemovedoras,
+        usoPanal,
         observaciones
 
     };
@@ -354,9 +385,11 @@ async function guardarValoracion({
                 subtipo_lescah,
                 clasificacion_lesion,
                 cambio_posicion,
-                linovera,
+                acidos_grasos_hiperoxigenados,
                 aposito_liberacion,
                 barrera_proteccion,
+                toallas_removedoras,
+                uso_panal,
                 observaciones,
                 fecha_hora_registro
             `)
@@ -370,6 +403,7 @@ async function guardarValoracion({
         );
 
         throw new Error(
+            error.message ||
             "No fue posible guardar la valoración."
         );
 
