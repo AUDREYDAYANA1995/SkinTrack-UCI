@@ -761,7 +761,51 @@ function buscarEnPacientesActivos(
     );
 }
 
+/* ==========================================================
+   ABRIR FICHA DEL PACIENTE
+========================================================== */
 
+document.addEventListener("click", function (event) {
+
+    const tarjeta = event.target.closest(".patient-card");
+
+    if (!tarjeta) {
+        return;
+    }
+
+    const ingresoId = tarjeta.dataset.ingresoId;
+
+    if (!ingresoId) {
+        return;
+    }
+
+    const ingreso = pacientesActivosEnMemoria.find(
+
+        item => item.id === ingresoId
+
+    );
+
+    if (!ingreso) {
+
+        console.error(
+            "Ingreso no encontrado:",
+            ingresoId
+        );
+
+        return;
+
+    }
+
+    console.log(
+        "✅ Paciente seleccionado:",
+        ingreso
+    );
+
+    abrirValoracionDesdeFicha(
+        ingreso
+    );
+
+});
 /* ==========================================================
    MÓDULO CARGADO
 ========================================================== */
