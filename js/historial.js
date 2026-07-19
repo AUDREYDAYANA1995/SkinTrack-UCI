@@ -15,6 +15,8 @@ let ingresoHistorialSeleccionado = null;
 
 let valoracionesHistorialEnMemoria = [];
 
+let valoracionDetalleActual = null;
+
 
 /* ==========================================================
    UTILIDADES
@@ -758,17 +760,20 @@ function abrirDetalleValoracion(
 
     if (!valoracion?.id) {
 
-        mostrarNotificacion(
-            "No se encontró la valoración seleccionada."
-        );
+    mostrarNotificacion(
+        "No se encontró la valoración seleccionada."
+    );
 
-        return;
+    return;
 
-    }
+}
 
-    const paciente =
-        ingresoHistorialSeleccionado
-            ?.pacientes || {};
+valoracionDetalleActual =
+    valoracion;
+
+const paciente =
+    ingresoHistorialSeleccionado
+        ?.pacientes || {};
 
     establecerTextoDetalleValoracion(
         "detalleValoracionInicial",
@@ -1051,19 +1056,7 @@ if (botonEditarValoracion) {
         "click",
         function () {
 
-            const valoracionActual =
-                valoracionesHistorialEnMemoria.find(
-                    (item) =>
-                        String(item.id) ===
-                        String(
-                            document
-                                .getElementById("detalleValoracionFecha")
-                                ?.dataset
-                                ?.valoracionId
-                        )
-                );
-
-            if (!valoracionActual) {
+            if (!valoracionDetalleActual?.id) {
 
                 mostrarNotificacion(
                     "No se encontró la valoración."
@@ -1075,24 +1068,25 @@ if (botonEditarValoracion) {
 
             console.log(
                 "✏️ Editar valoración:",
-                valoracionActual
+                valoracionDetalleActual
             );
 
             iniciarEdicionValoracion(
-                valoracionActual.id
+                valoracionDetalleActual.id
             );
-
-            // Aquí cargaremos el formulario
-            // en el siguiente paso.
 
             mostrarNotificacion(
                 "Modo edición activado."
             );
 
+            // En el siguiente paso cargaremos
+            // los datos en el formulario.
+
         }
     );
 
 }
+
 /* ==========================================================
    MÓDULO CARGADO
 ========================================================== */
