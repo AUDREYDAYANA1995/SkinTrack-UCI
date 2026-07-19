@@ -1962,4 +1962,100 @@ button.patient-card:focus-visible {
         grid-column: auto;
 
     }
+    /* ==========================================================
+   ACCIONES DEL DETALLE DE LA VALORACIÓN
+========================================================== */
+
+.valuation-detail-actions {
+
+    margin-top: 18px;
+
+}
+
+.valuation-edit-button {
+
+    width: 100%;
+    min-height: 78px;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 16px;
+
+    border: none;
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            #1549c7
+        );
+
+    color: white;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 12px 24px rgba(8,46,155,.22);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+
+}
+
+.valuation-edit-button:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 16px 30px rgba(8,46,155,.28);
+
+}
+
+.valuation-edit-icon {
+
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 14px;
+
+    background: rgba(255,255,255,.18);
+
+    font-size: 18px;
+    font-weight: 700;
+
+}
+
+.valuation-edit-content {
+
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+}
+
+.valuation-edit-content strong {
+
+    margin-bottom: 5px;
+
+    font-size: 16px;
+
+}
+
+.valuation-edit-content small {
+
+    color: rgba(255,255,255,.82);
+
+    font-size: 12px;
+    line-height: 1.4;
+
 }
