@@ -773,30 +773,31 @@ button {
 ========================================================== */
 
 .bottom-navigation {
-    position: sticky;
-    bottom: 0;
-    left: 0;
 
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    width: auto;
 
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     align-items: end;
 
-    margin: 0;
-    padding: 14px 12px 12px;
+    padding: 14px 12px calc(12px + env(safe-area-inset-bottom));
 
     background: #ffffff;
-    border-top: 1px solid #dfe6f2;
-    border-radius: 0 0 30px 30px;
 
-    box-shadow: 0 -8px 24px rgba(8, 46, 155, 0.08);
+    border-top: 1px solid #dfe6f2;
+    border-radius: 0 0 28px 28px;
+
+    box-shadow:
+        0 -8px 24px rgba(8,46,155,.08);
 
     z-index: 100;
 }
-
 /* ==========================================================
    NOTIFICACIONES
 ========================================================== */
@@ -846,48 +847,30 @@ button {
    RESPONSIVE
 ========================================================== */
 
-@media (min-width: 481px) {
+@media (min-width:481px){
 
-    body {
-        padding: 24px 0;
+    body{
+        padding:24px 0;
     }
 
-    .app {
-        min-height: calc(100vh - 48px);
+    .app{
 
-        border-radius: 28px;
+        min-height:calc(100vh - 48px);
+
+        border-radius:28px;
+
+        overflow:hidden;
+
     }
 
-    .bottom-navigation {
-        bottom: 24px;
+    .bottom-navigation{
 
-        border-radius: 0 0 28px 28px;
-    }
+        left:0;
+        right:0;
+        bottom:0;
 
-}
+        border-radius:0 0 28px 28px;
 
-@media (max-width: 380px) {
-
-    .app {
-        padding-left: 16px;
-        padding-right: 16px;
-    }
-
-    .summary-grid {
-        gap: 7px;
-    }
-
-    .summary-card {
-        padding: 13px 9px;
-    }
-
-    .summary-card strong {
-        font-size: 27px;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 0;
     }
 
 }
@@ -2376,3 +2359,32 @@ button.patient-card:focus-visible {
     font-size: 14px;
     font-weight: 700;
 }
+
+/* ==========================================================
+   BOTONES DEL MENÚ INFERIOR
+========================================================== */
+.bottom-navigation button{
+
+    width:100%;
+
+    border:none;
+
+    background:transparent;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    gap:6px;
+
+    min-width:0;
+
+}
+
+.bottom-navigation button span{
+
+    white-space:nowrap;
+
+}
+
