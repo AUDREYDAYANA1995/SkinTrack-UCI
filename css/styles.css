@@ -1945,7 +1945,7 @@ button.patient-card:focus-visible {
 }
 
 
-/* ==========================================================
+//* ==========================================================
    RESPONSIVE DEL DETALLE
 ========================================================== */
 
@@ -1962,13 +1962,18 @@ button.patient-card:focus-visible {
         grid-column: auto;
 
     }
-    /* ==========================================================
+
+}
+
+
+/* ==========================================================
    ACCIONES DEL DETALLE DE LA VALORACIÓN
 ========================================================== */
 
 .valuation-detail-actions {
 
     margin-top: 18px;
+    margin-bottom: 10px;
 
 }
 
@@ -1996,22 +2001,26 @@ button.patient-card:focus-visible {
     color: white;
 
     cursor: pointer;
+    text-align: left;
 
     box-shadow:
-        0 12px 24px rgba(8,46,155,.22);
+        0 12px 24px rgba(8, 46, 155, 0.22);
 
     transition:
-        transform .2s ease,
-        box-shadow .2s ease;
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 
 }
 
-.valuation-edit-button:hover {
+.valuation-edit-button:hover,
+.valuation-edit-button:focus-visible {
 
     transform: translateY(-2px);
 
     box-shadow:
-        0 16px 30px rgba(8,46,155,.28);
+        0 16px 30px rgba(8, 46, 155, 0.28);
+
+    outline: none;
 
 }
 
@@ -2028,7 +2037,8 @@ button.patient-card:focus-visible {
 
     border-radius: 14px;
 
-    background: rgba(255,255,255,.18);
+    background: rgba(255, 255, 255, 0.18);
+    color: white;
 
     font-size: 18px;
     font-weight: 700;
@@ -2047,15 +2057,29 @@ button.patient-card:focus-visible {
 
     margin-bottom: 5px;
 
+    color: white;
+
     font-size: 16px;
+    font-weight: 700;
 
 }
 
 .valuation-edit-content small {
 
-    color: rgba(255,255,255,.82);
+    color: rgba(255, 255, 255, 0.82);
 
     font-size: 12px;
     line-height: 1.4;
+
+}
+
+.valuation-edit-button .arrow {
+
+    margin-left: auto;
+
+    color: white;
+
+    font-size: 28px;
+    line-height: 1;
 
 }
