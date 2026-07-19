@@ -769,96 +769,33 @@ button {
 
 
 /* ==========================================================
-   NAVEGACIÓN INFERIOR
+   MENÚ DE NAVEGACIÓN INFERIOR
 ========================================================== */
 
 .bottom-navigation {
-    position: fixed;
-    z-index: 20;
+    position: sticky;
     bottom: 0;
+    left: 0;
 
     width: 100%;
-    max-width: 480px;
+    max-width: 100%;
+    box-sizing: border-box;
 
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     align-items: end;
 
-    padding:
-        9px
-        10px
-        max(9px, env(safe-area-inset-bottom));
+    margin: 0;
+    padding: 14px 12px 12px;
 
-    border-top: 1px solid var(--border);
+    background: #ffffff;
+    border-top: 1px solid #dfe6f2;
+    border-radius: 0 0 30px 30px;
 
-    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 -8px 24px rgba(8, 46, 155, 0.08);
 
-    backdrop-filter: blur(12px);
-
-    box-shadow:
-        0 -8px 24px rgba(30, 48, 80, 0.08);
+    z-index: 100;
 }
-
-.nav-button {
-    min-height: 53px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    border: none;
-
-    background: transparent;
-    color: var(--text-soft);
-
-    cursor: pointer;
-
-    gap: 4px;
-}
-
-.nav-button.active {
-    color: var(--primary);
-}
-
-.nav-icon {
-    font-size: 17px;
-    font-weight: 800;
-}
-
-.nav-button small {
-    font-size: 10px;
-}
-
-.main-nav-button {
-    position: relative;
-
-    color: var(--primary);
-}
-
-.nav-plus {
-    width: 49px;
-    height: 49px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    margin-top: -28px;
-
-    border: 5px solid white;
-    border-radius: 50%;
-
-    background: var(--primary);
-    color: white;
-
-    font-size: 30px;
-    font-weight: 300;
-
-    box-shadow:
-        0 9px 20px rgba(8, 46, 155, 0.28);
-}
-
 
 /* ==========================================================
    NOTIFICACIONES
