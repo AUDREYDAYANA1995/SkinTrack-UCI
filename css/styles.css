@@ -1583,13 +1583,19 @@ button.patient-card:focus-visible {
 
 }
 
-@media (max-width:480px){
+/* ==========================================================
+   RESPONSIVE DEL HISTORIAL
+========================================================== */
 
-    .history-grid{
+@media (max-width: 480px) {
 
-        grid-template-columns:1fr;
+    .history-grid {
+
+        grid-template-columns: 1fr;
 
     }
+
+}
 
     /* ==========================================================
    ACCIONES DEL HISTORIAL
@@ -1646,7 +1652,7 @@ button.patient-card:focus-visible {
     color: white;
 
     box-shadow:
-        0 8px 18px rgba(8, 46, 155, 0.18);
+        0 8px 18px rgba(8,46,155,.18);
 
     outline: none;
 
@@ -1673,12 +1679,10 @@ button.patient-card:focus-visible {
 
 }
 
-.history-action-button:hover
-.history-action-icon,
-.history-action-button:focus-visible
-.history-action-icon {
+.history-action-button:hover .history-action-icon,
+.history-action-button:focus-visible .history-action-icon {
 
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255,255,255,.18);
 
 }
 
