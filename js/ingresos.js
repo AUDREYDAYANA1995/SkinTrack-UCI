@@ -24,7 +24,7 @@ function normalizarCama(cama) {
  *
  * Un ingreso se considera activo cuando:
  * - pertenece al paciente indicado;
- * - su estado es "activo";
+ * - su estado es "ACTIVO";
  * - no tiene fecha de egreso.
  *
  * @param {string} pacienteId
@@ -113,13 +113,13 @@ async function crearIngresoUCI({
 
     const nuevoIngreso = {
 
-    paciente_id: pacienteId,
-    cama: camaNormalizada,
-    fecha_ingreso: new Date().toISOString(),
-    fecha_egreso: null,
-    estado: "ACTIVO"
+        paciente_id: pacienteId,
+        cama: camaNormalizada,
+        fecha_ingreso: new Date().toISOString(),
+        fecha_egreso: null,
+        estado: "ACTIVO"
 
-};
+    };
 
     const { data, error } = await supabaseClient
         .from("ingresos_uci")
@@ -189,6 +189,85 @@ async function obtenerOCrearIngresoUCI({
         pacienteId,
         cama
     });
+}
+
+
+/**
+ * Finaliza un ingreso activo en UCI.
+ *
+ * Actualiza:
+ * - fecha_egreso;
+ * - estado = "EGRESADO".
+ *
+ * @param {string} ingresoId
+ * @returns {Promise<Object>}
+ */
+async function darEgresoIngresoUCI(ingresoId) {
+
+    if (!ingresoId) {
+        throw new Error(
+            "Se requiere el identificador del ingreso UCI."
+        );
+    }
+
+    const datosEgreso = {
+
+        fecha_egreso: new Date().toISOString(),
+        estado: "EGRESADO"
+
+    };
+
+    const { data, error } = await supabaseClient
+        .from("ingresos_uci")
+        .update(datosEgreso)
+        .eq("id", ingresoId)
+        .eq("estado", "ACTIVO")
+        .is("fecha_egreso", null)
+        .select(`
+            id,
+            paciente_id,
+            cama,
+            fecha_ingreso,
+            fecha_egreso,
+            estado
+        `)
+        .maybeSingle();
+
+    if (error) {
+
+        console.error(
+            "❌ Error al dar egreso al paciente:",
+            error
+        );
+
+        if (
+            error.code === "42501" ||
+            String(error.message || "")
+                .toLowerCase()
+                .includes("permission denied")
+        ) {
+            throw new Error(
+                "No hay permisos para dar egreso en la tabla ingresos_uci."
+            );
+        }
+
+        throw new Error(
+            "No fue posible finalizar el ingreso UCI."
+        );
+    }
+
+    if (!data) {
+        throw new Error(
+            "El ingreso ya fue egresado o dejó de estar activo."
+        );
+    }
+
+    console.log(
+        "✅ Egreso UCI registrado:",
+        data
+    );
+
+    return data;
 }
 
 
