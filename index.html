@@ -1454,122 +1454,390 @@
 <section
     id="vistaEstadisticas"
     class="view"
->        
+>
 
-            <div class="section-header">
+    <!-- ==================================================
+         ENCABEZADO
+    =================================================== -->
 
-                <button
-                    type="button"
-                    class="back-button"
-                    data-view="vistaInicio"
-                    aria-label="Volver"
-                >
-                    ‹
-                </button>
+    <div class="section-header">
+
+        <button
+            type="button"
+            class="back-button"
+            data-view="vistaInicio"
+            aria-label="Volver"
+        >
+            ‹
+        </button>
+
+        <div>
+
+            <p class="section-label">
+                Indicadores clínicos
+            </p>
+
+            <h2>
+                Estadísticas del día
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         ESTADO DE CARGA
+    =================================================== -->
+
+    <div
+        id="estadisticasEstadoCarga"
+        class="statistics-empty-state"
+    >
+
+        <div class="statistics-empty-icon">
+            %
+        </div>
+
+        <h3>
+            Cargando indicadores
+        </h3>
+
+        <p>
+            Consultando las valoraciones registradas hoy.
+        </p>
+
+    </div>
+
+
+    <!-- ==================================================
+         CONTENIDO PRINCIPAL
+    =================================================== -->
+
+    <div
+        id="estadisticasContenido"
+        class="statistics-dashboard"
+        hidden
+    >
+
+
+        <!-- ==================================================
+             CUMPLIMIENTO DIARIO
+        =================================================== -->
+
+        <section class="statistics-section">
+
+            <article class="statistics-compliance-card">
+
+                <div class="statistics-card-heading">
+
+                    <div>
+
+                        <p class="section-label">
+                            Cobertura
+                        </p>
+
+                        <h3>
+                            Cumplimiento de valoración
+                        </h3>
+
+                    </div>
+
+                    <strong
+                        id="estadisticaCumplimientoPorcentaje"
+                        class="statistics-main-percentage"
+                    >
+                        0 %
+                    </strong>
+
+                </div>
+
+                <div class="statistics-progress">
+
+                    <div
+                        id="estadisticaCumplimientoBarra"
+                        class="statistics-progress-value"
+                        style="width: 0%;"
+                    ></div>
+
+                </div>
+
+                <div class="statistics-compliance-detail">
+
+                    <span>
+                        <strong id="estadisticaValoradosHoy">
+                            0
+                        </strong>
+                        valorados
+                    </span>
+
+                    <span>
+                        de
+                    </span>
+
+                    <span>
+                        <strong id="estadisticaPacientesActivos">
+                            0
+                        </strong>
+                        pacientes activos
+                    </span>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- ==================================================
+             RIESGO
+        =================================================== -->
+
+        <section class="statistics-section">
+
+            <div class="statistics-section-heading">
 
                 <div>
 
                     <p class="section-label">
-                        Indicadores
+                        Valoración clínica
                     </p>
 
-                    <h2>
-                        Estadísticas
-                    </h2>
+                    <h3>
+                        Distribución del riesgo
+                    </h3>
+
+                </div>
+
+                <span
+                    id="estadisticaRiesgoTotal"
+                    class="statistics-total-badge"
+                >
+                    0 valorados
+                </span>
+
+            </div>
+
+            <div
+                id="estadisticaRiesgoLista"
+                class="statistics-indicator-list"
+            ></div>
+
+        </section>
+
+
+        <!-- ==================================================
+             ESTADO GENERAL DE LA PIEL
+        =================================================== -->
+
+        <section class="statistics-section">
+
+            <div class="statistics-section-heading">
+
+                <div>
+
+                    <p class="section-label">
+                        Condición cutánea
+                    </p>
+
+                    <h3>
+                        Estado general de la piel
+                    </h3>
+
+                </div>
+
+                <span
+                    id="estadisticaPielTotal"
+                    class="statistics-total-badge"
+                >
+                    0 valorados
+                </span>
+
+            </div>
+
+            <div
+                id="estadisticaPielLista"
+                class="statistics-indicator-list"
+            ></div>
+
+        </section>
+
+
+        <!-- ==================================================
+             TIPOS DE LESIÓN
+        =================================================== -->
+
+        <section
+            id="estadisticaLesionesSeccion"
+            class="statistics-section"
+        >
+
+            <div class="statistics-section-heading">
+
+                <div>
+
+                    <p class="section-label">
+                        Lesiones identificadas
+                    </p>
+
+                    <h3>
+                        Tipos de lesión
+                    </h3>
+
+                </div>
+
+                <span
+                    id="estadisticaLesionesTotal"
+                    class="statistics-total-badge"
+                >
+                    0 casos
+                </span>
+
+            </div>
+
+            <div
+                id="estadisticaLesionesLista"
+                class="statistics-indicator-list"
+            ></div>
+
+        </section>
+
+
+        <!-- ==================================================
+             DETALLE Y CLASIFICACIÓN DE LESIONES
+        =================================================== -->
+
+        <section
+            id="estadisticaClasificacionesSeccion"
+            class="statistics-section"
+        >
+
+            <div class="statistics-section-heading">
+
+                <div>
+
+                    <p class="section-label">
+                        Caracterización clínica
+                    </p>
+
+                    <h3>
+                        Clasificación de las lesiones
+                    </h3>
 
                 </div>
 
             </div>
 
-
-            <section class="statistics-grid">
-
-                <article class="stat-card">
-
-                    <span>
-                        Cumplimiento diario
-                    </span>
-
-                    <strong>
-                        0 %
-                    </strong>
-
-                    <div class="progress">
-
-                        <div style="width: 0%"></div>
-
-                    </div>
-
-                </article>
-
-
-                <article class="stat-card">
-
-                    <span>
-                        Piel íntegra
-                    </span>
-
-                    <strong>
-                        0
-                    </strong>
-
-                    <small>
-                        Pacientes valorados
-                    </small>
-
-                </article>
-
-
-                <article class="stat-card alert">
-
-                    <span>
-                        Con alteraciones
-                    </span>
-
-                    <strong>
-                        0
-                    </strong>
-
-                    <small>
-                        Registros identificados
-                    </small>
-
-                </article>
-
-
-                <article class="stat-card danger">
-
-                    <span>
-                        Con lesión
-                    </span>
-
-                    <strong>
-                        0
-                    </strong>
-
-                    <small>
-                        Pacientes registrados
-                    </small>
-
-                </article>
-
-            </section>
-
-
-            <div class="chart-placeholder">
-
-                <h3>
-                    Estado general de la piel
-                </h3>
-
-                <p>
-                    Aquí se mostrará la gráfica cuando existan valoraciones registradas.
-                </p>
-
-            </div>
+            <div
+                id="estadisticaClasificacionesContenedor"
+                class="statistics-classification-list"
+            ></div>
 
         </section>
 
+
+        <!-- ==================================================
+             MEDIDAS PREVENTIVAS
+        =================================================== -->
+
+        <section class="statistics-section">
+
+            <div class="statistics-section-heading">
+
+                <div>
+
+                    <p class="section-label">
+                        Prevención
+                    </p>
+
+                    <h3>
+                        Medidas preventivas aplicadas
+                    </h3>
+
+                </div>
+
+                <span
+                    id="estadisticaMedidasTotal"
+                    class="statistics-total-badge"
+                >
+                    0 valorados
+                </span>
+
+            </div>
+
+            <div
+                id="estadisticaMedidasLista"
+                class="statistics-indicator-list"
+            ></div>
+
+        </section>
+
+
+        <!-- ==================================================
+             USO DE PAÑAL
+        =================================================== -->
+
+        <section class="statistics-section">
+
+            <div class="statistics-section-heading">
+
+                <div>
+
+                    <p class="section-label">
+                        Cuidado asociado
+                    </p>
+
+                    <h3>
+                        Uso de pañal
+                    </h3>
+
+                </div>
+
+                <span
+                    id="estadisticaPanalTotal"
+                    class="statistics-total-badge"
+                >
+                    0 valorados
+                </span>
+
+            </div>
+
+            <div
+                id="estadisticaPanalLista"
+                class="statistics-indicator-list"
+            ></div>
+
+        </section>
+
+    </div>
+
+
+    <!-- ==================================================
+         SIN VALORACIONES
+    =================================================== -->
+
+    <div
+        id="estadisticasSinDatos"
+        class="statistics-empty-state"
+        hidden
+    >
+
+        <div class="statistics-empty-icon">
+            %
+        </div>
+
+        <h3>
+            Sin valoraciones registradas
+        </h3>
+
+        <p>
+            Las estadísticas aparecerán cuando se registren
+            valoraciones de piel durante el día.
+        </p>
+
+    </div>
+
+</section>
 
         <!-- ==================================================
              MENÚ INFERIOR
