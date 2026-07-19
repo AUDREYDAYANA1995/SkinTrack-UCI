@@ -1937,38 +1937,394 @@ function renderizarEstadoPielEstadisticas(
 
 }
 
+/* ==========================================================
+   TIPOS Y CLASIFICACIONES DE LESIONES
+========================================================== */
+
 
 /**
- * Limpia provisionalmente las secciones
- * que se conectarán en los pasos siguientes.
+ * Suma las cantidades de una colección de categorías.
+ *
+ * @param {Object} categorias
+ * @returns {number}
  */
-function prepararSeccionesPendientesEstadisticas() {
+function sumarCategoriasEstadistica(categorias) {
 
-    const seccionLesiones =
+    if (
+        !categorias ||
+        typeof categorias !== "object"
+    ) {
+        return 0;
+    }
+
+    return Object.values(categorias)
+        .reduce(
+            (acumulado, cantidad) =>
+                acumulado +
+                (Number(cantidad) || 0),
+            0
+        );
+
+}
+
+
+/**
+ * Convierte un objeto de categorías en la estructura
+ * utilizada por las listas visuales.
+ *
+ * @param {Object} categorias
+ * @returns {Array<Object>}
+ */
+function convertirCategoriasAListaEstadistica(
+    categorias
+) {
+
+    if (
+        !categorias ||
+        typeof categorias !== "object"
+    ) {
+        return [];
+    }
+
+    return Object.entries(categorias)
+        .filter(
+            ([nombre, cantidad]) =>
+                String(nombre || "").trim() &&
+                Number(cantidad) > 0
+        )
+        .map(
+            ([nombre, cantidad]) => ({
+                nombre,
+                cantidad:
+                    Number(cantidad) || 0
+            })
+        )
+        .sort(
+            (a, b) =>
+                b.cantidad -
+                a.cantidad
+        );
+
+}
+
+
+/**
+ * Renderiza los tipos de lesión usando exactamente
+ * las categorías registradas en el formulario.
+ *
+ * @param {Object} lesiones
+ */
+function renderizarTiposLesionEstadisticas(
+    lesiones
+) {
+
+    const categorias =
+        convertirCategoriasAListaEstadistica(
+            lesiones?.categorias
+        );
+
+    const totalLesiones =
+        sumarCategoriasEstadistica(
+            lesiones?.categorias
+        );
+
+    escribirTextoEstadistica(
+        "estadisticaLesionesTotal",
+        `${totalLesiones} ${
+            totalLesiones === 1
+                ? "caso"
+                : "casos"
+        }`
+    );
+
+    const seccion =
         document.getElementById(
             "estadisticaLesionesSeccion"
         );
 
-    const seccionClasificaciones =
+    if (seccion) {
+        seccion.hidden =
+            totalLesiones === 0;
+    }
+
+    renderizarListaIndicadoresEstadistica(
+        "estadisticaLesionesLista",
+        categorias,
+        totalLesiones
+    );
+
+}
+
+
+/**
+ * Construye una tarjeta de clasificación clínica.
+ *
+ * @param {string} titulo
+ * @param {Array<Object>} categorias
+ * @param {number} total
+ * @returns {string}
+ */
+function construirTarjetaClasificacionEstadistica(
+    titulo,
+    categorias,
+    total
+) {
+
+    if (
+        !Array.isArray(categorias) ||
+        categorias.length === 0 ||
+        total <= 0
+    ) {
+        return "";
+    }
+
+    const filas =
+        categorias
+            .map(
+                (categoria) =>
+                    construirFilaIndicadorEstadistica({
+                        nombre:
+                            categoria.nombre,
+
+                        cantidad:
+                            categoria.cantidad,
+
+                        total
+                    })
+            )
+            .join("");
+
+    return `
+        <article class="statistics-classification-card">
+
+            <h4>
+                ${escaparHTML(titulo)}
+            </h4>
+
+            <div class="statistics-indicator-list">
+                ${filas}
+            </div>
+
+        </article>
+    `;
+
+}
+
+
+/**
+ * Renderiza el detalle de LESCAH y las clasificaciones
+ * registradas para las lesiones.
+ *
+ * @param {Object} indicadores
+ */
+function renderizarClasificacionesEstadisticas(
+    indicadores
+) {
+
+    const contenedor =
+        document.getElementById(
+            "estadisticaClasificacionesContenedor"
+        );
+
+    const seccion =
         document.getElementById(
             "estadisticaClasificacionesSeccion"
         );
 
-    /*
-     * Todavía no mostramos estas secciones.
-     * Se activarán cuando conectemos tipos
-     * y clasificaciones de lesiones.
-     */
-    if (seccionLesiones) {
-        seccionLesiones.hidden = true;
+    if (!contenedor) {
+        return;
     }
 
-    if (seccionClasificaciones) {
-        seccionClasificaciones.hidden = true;
+    const tarjetas = [];
+
+    const categoriasLescah =
+        convertirCategoriasAListaEstadistica(
+            indicadores?.lescah?.categorias
+        );
+
+    const totalLescah =
+        sumarCategoriasEstadistica(
+            indicadores?.lescah?.categorias
+        );
+
+    const tarjetaLescah =
+        construirTarjetaClasificacionEstadistica(
+            "Clasificación LESCAH",
+            categoriasLescah,
+            totalLescah
+        );
+
+    if (tarjetaLescah) {
+        tarjetas.push(tarjetaLescah);
+    }
+
+    const categoriasClasificacion =
+        convertirCategoriasAListaEstadistica(
+            indicadores?.clasificaciones
+        );
+
+    const totalClasificaciones =
+        sumarCategoriasEstadistica(
+            indicadores?.clasificaciones
+        );
+
+    const tarjetaClasificaciones =
+        construirTarjetaClasificacionEstadistica(
+            "Clasificación de las lesiones",
+            categoriasClasificacion,
+            totalClasificaciones
+        );
+
+    if (tarjetaClasificaciones) {
+        tarjetas.push(
+            tarjetaClasificaciones
+        );
+    }
+
+    contenedor.innerHTML =
+        tarjetas.join("");
+
+    if (seccion) {
+        seccion.hidden =
+            tarjetas.length === 0;
     }
 
 }
 
+
+/* ==========================================================
+   MEDIDAS PREVENTIVAS
+========================================================== */
+
+
+/**
+ * Renderiza las medidas preventivas del formulario.
+ *
+ * @param {Object} medidas
+ * @param {number} totalValorados
+ */
+function renderizarMedidasPreventivasEstadisticas(
+    medidas,
+    totalValorados
+) {
+
+    escribirTextoEstadistica(
+        "estadisticaMedidasTotal",
+        `${totalValorados} valorados`
+    );
+
+    const categorias = [
+        {
+            nombre:
+                "Cambio de posición",
+
+            cantidad:
+                medidas
+                    ?.cambioPosicion
+                    ?.total || 0
+        },
+        {
+            nombre:
+                "Ácidos grasos hiperoxigenados",
+
+            cantidad:
+                medidas
+                    ?.acidosGrasosHiperoxigenados
+                    ?.total || 0
+        },
+        {
+            nombre:
+                "Apósitos de liberación",
+
+            cantidad:
+                medidas
+                    ?.apositoLiberacion
+                    ?.total || 0
+        },
+        {
+            nombre:
+                "Barrera de protección",
+
+            cantidad:
+                medidas
+                    ?.barreraProteccion
+                    ?.total || 0
+        },
+        {
+            nombre:
+                "Toallas removedoras",
+
+            cantidad:
+                medidas
+                    ?.toallasRemovedoras
+                    ?.total || 0
+        }
+    ];
+
+    renderizarListaIndicadoresEstadistica(
+        "estadisticaMedidasLista",
+        categorias,
+        totalValorados
+    );
+
+}
+
+
+/* ==========================================================
+   USO DE PAÑAL
+========================================================== */
+
+
+/**
+ * Renderiza el uso de pañal.
+ *
+ * @param {Object} usoPanal
+ * @param {number} totalValorados
+ */
+function renderizarUsoPanalEstadisticas(
+    usoPanal,
+    totalValorados
+) {
+
+    escribirTextoEstadistica(
+        "estadisticaPanalTotal",
+        `${totalValorados} valorados`
+    );
+
+    const categorias = [
+        {
+            nombre: "Sí",
+            cantidad:
+                usoPanal?.si || 0
+        },
+        {
+            nombre: "No",
+            cantidad:
+                usoPanal?.no || 0
+        }
+    ];
+
+    if (
+        Number(
+            usoPanal?.sinRegistro
+        ) > 0
+    ) {
+
+        categorias.push({
+            nombre: "Sin registro",
+            cantidad:
+                usoPanal.sinRegistro
+        });
+
+    }
+
+    renderizarListaIndicadoresEstadistica(
+        "estadisticaPanalLista",
+        categorias,
+        totalValorados
+    );
+
+}
 
 /**
  * Consulta y muestra las estadísticas clínicas del día.
@@ -1980,8 +2336,6 @@ async function cargarEstadisticasClinicas() {
     mostrarEstadoEstadisticas(
         "cargando"
     );
-
-    prepararSeccionesPendientesEstadisticas();
 
     try {
 
@@ -2025,13 +2379,31 @@ async function cargarEstadisticasClinicas() {
         );
 
         renderizarEstadoPielEstadisticas(
-            indicadores.piel,
-            totalValorados
-        );
+    indicadores.piel,
+    totalValorados
+);
 
-        mostrarEstadoEstadisticas(
-            "contenido"
-        );
+renderizarTiposLesionEstadisticas(
+    indicadores.lesiones
+);
+
+renderizarClasificacionesEstadisticas(
+    indicadores
+);
+
+renderizarMedidasPreventivasEstadisticas(
+    indicadores.medidasPreventivas,
+    totalValorados
+);
+
+renderizarUsoPanalEstadisticas(
+    indicadores.usoPanal,
+    totalValorados
+);
+
+mostrarEstadoEstadisticas(
+    "contenido"
+);
 
         console.log(
             "✅ Estadísticas clínicas mostradas:",
