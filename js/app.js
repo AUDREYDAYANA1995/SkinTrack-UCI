@@ -358,9 +358,20 @@ function establecerEstadoGuardado(
     botonGuardar.disabled =
         guardando;
 
+    if (guardando) {
+
+        botonGuardar.textContent =
+            estaEditandoValoracion()
+                ? "Actualizando..."
+                : "Guardando...";
+
+        return;
+
+    }
+
     botonGuardar.textContent =
-        guardando
-            ? "Procesando..."
+        estaEditandoValoracion()
+            ? "Actualizar valoración"
             : "Guardar valoración";
 
 }
@@ -559,6 +570,276 @@ function abrirValoracionDesdeFicha(
         {
             paciente,
             ingreso
+        }
+    );
+
+}
+/* ==========================================================
+   ABRIR VALORACIÓN EN MODO EDICIÓN
+========================================================== */
+
+/**
+ * Marca una medida preventiva dentro del formulario.
+ *
+ * @param {string} nombreMedida
+ * @param {boolean} seleccionada
+ */
+function establecerMedidaPreventivaFormulario(
+    nombreMedida,
+    seleccionada
+) {
+
+    const campos =
+        formValoracion
+            ?.querySelectorAll(
+                'input[name="medidasPreventivas"]'
+            ) || [];
+
+    campos.forEach(
+        (campo) => {
+
+            if (
+                String(campo.value) ===
+                String(nombreMedida)
+            ) {
+
+                campo.checked =
+                    Boolean(seleccionada);
+
+            }
+
+        }
+    );
+
+}
+
+
+/**
+ * Selecciona una opción tipo radio.
+ *
+ * @param {string} nombreCampo
+ * @param {string} valor
+ */
+function establecerRadioFormulario(
+    nombreCampo,
+    valor
+) {
+
+    const radios =
+        formValoracion
+            ?.querySelectorAll(
+                `input[name="${nombreCampo}"]`
+            ) || [];
+
+    radios.forEach(
+        (radio) => {
+
+            radio.checked =
+                String(radio.value) ===
+                String(valor || "");
+
+        }
+    );
+
+}
+
+
+/**
+ * Abre una valoración existente dentro del formulario.
+ *
+ * @param {Object} valoracion
+ * @param {Object} ingreso
+ */
+async function abrirValoracionParaEditar(
+    valoracion,
+    ingreso
+) {
+
+    if (!valoracion?.id) {
+
+        mostrarNotificacion(
+            "No se encontró la valoración que se desea editar."
+        );
+
+        return;
+
+    }
+
+    if (!ingreso?.id) {
+
+        mostrarNotificacion(
+            "No se encontró el ingreso asociado a la valoración."
+        );
+
+        return;
+
+    }
+
+    const paciente =
+        ingreso.pacientes || {};
+
+    formularioDesdeFicha =
+        true;
+
+    ingresoSeleccionadoActual =
+        ingreso;
+
+    pacienteEncontradoActual =
+        paciente;
+
+    if (formValoracion) {
+
+        formValoracion.reset();
+
+    }
+
+    reiniciarCamposLesion();
+
+    if (campoCama) {
+
+        campoCama.disabled =
+            false;
+
+        campoCama.value =
+            String(
+                valoracion.cama ||
+                ingreso.cama ||
+                ""
+            );
+
+    }
+
+    if (campoCedula) {
+
+        campoCedula.value =
+            paciente.cedula || "";
+
+    }
+
+    if (campoNombrePaciente) {
+
+        campoNombrePaciente.value =
+            paciente.nombre || "";
+
+    }
+
+    bloquearIdentificacionPaciente();
+
+    if (campoRiesgo) {
+
+        campoRiesgo.value =
+            valoracion.riesgo || "";
+
+    }
+
+    if (campoEstadoPiel) {
+
+        campoEstadoPiel.value =
+            valoracion.estado_piel || "";
+
+        await manejarCambioEstadoPiel();
+
+    }
+
+    if (
+        campoTipoLesion &&
+        valoracion.tipo_lesion
+    ) {
+
+        campoTipoLesion.value =
+            valoracion.tipo_lesion;
+
+        await manejarCambioTipoLesion();
+
+    }
+
+    if (
+        campoSubtipoLescah &&
+        valoracion.subtipo_lescah
+    ) {
+
+        campoSubtipoLescah.value =
+            valoracion.subtipo_lescah;
+
+        await manejarCambioSubtipoLescah();
+
+    }
+
+    if (
+        campoClasificacionLesion &&
+        valoracion.clasificacion_lesion
+    ) {
+
+        campoClasificacionLesion.value =
+            valoracion.clasificacion_lesion;
+
+    }
+
+    establecerMedidaPreventivaFormulario(
+        "Cambio de posición",
+        valoracion.cambio_posicion
+    );
+
+    establecerMedidaPreventivaFormulario(
+        "Ácidos grasos hiperoxigenados",
+        valoracion
+            .acidos_grasos_hiperoxigenados
+    );
+
+    establecerMedidaPreventivaFormulario(
+        "Apósitos de liberación",
+        valoracion.aposito_liberacion
+    );
+
+    establecerMedidaPreventivaFormulario(
+        "Barrera de protección",
+        valoracion.barrera_proteccion
+    );
+
+    establecerMedidaPreventivaFormulario(
+        "Toallas removedoras",
+        valoracion.toallas_removedoras
+    );
+
+    establecerRadioFormulario(
+        "usoPanal",
+        valoracion.uso_panal
+    );
+
+    if (campoRegistradoPor) {
+
+        campoRegistradoPor.value =
+            valoracion.registrado_por || "";
+
+    }
+
+    if (campoObservaciones) {
+
+        campoObservaciones.value =
+            valoracion.observaciones || "";
+
+    }
+
+    iniciarEdicionValoracion(
+        valoracion.id
+    );
+
+    establecerEstadoGuardado(
+        false
+    );
+
+    actualizarFechaHoraRegistro();
+
+    mostrarVista(
+        "vistaValoracion"
+    );
+
+    console.log(
+        "✏️ Valoración abierta para edición:",
+        {
+            valoracion,
+            ingreso,
+            paciente
         }
     );
 
@@ -1430,14 +1711,19 @@ function limpiarFormularioValoracion() {
     formularioDesdeFicha =
         false;
 
+    finalizarEdicionValoracion();
+
     desbloquearIdentificacionPaciente();
 
     reiniciarCamposLesion();
 
     actualizarFechaHoraRegistro();
 
-}
+    establecerEstadoGuardado(
+        false
+    );
 
+}
 
 /* ==========================================================
    ENVÍO DEL FORMULARIO
@@ -1457,6 +1743,12 @@ if (formValoracion) {
 
             }
 
+            const modoEdicion =
+                estaEditandoValoracion();
+
+            const valoracionId =
+                obtenerValoracionEnEdicionId();
+
             establecerEstadoGuardado(
                 true
             );
@@ -1471,7 +1763,9 @@ if (formValoracion) {
                 );
 
                 console.log(
-                    "Valoración lista para guardar:",
+                    modoEdicion
+                        ? "Valoración lista para actualizar:"
+                        : "Valoración lista para guardar:",
                     datosFormulario
                 );
 
@@ -1483,70 +1777,95 @@ if (formValoracion) {
                         datosFormulario
                     );
 
-                const valoracionGuardada =
-                    await guardarValoracion({
+                const datosValoracion = {
 
-                        ingresoId:
-                            ingreso.id,
+                    ingresoId:
+                        ingreso.id,
 
-                        cama:
-                            ingreso.cama ||
-                            datosFormulario.cama,
+                    cama:
+                        ingreso.cama ||
+                        datosFormulario.cama,
 
-                        registradoPor:
-                            datosFormulario.registradoPor,
+                    registradoPor:
+                        datosFormulario.registradoPor,
 
-                        riesgo:
-                            datosFormulario.riesgo,
+                    riesgo:
+                        datosFormulario.riesgo,
 
-                        estadoPiel:
-                            datosFormulario.estadoPiel,
+                    estadoPiel:
+                        datosFormulario.estadoPiel,
 
-                        tipoLesion:
-                            datosFormulario.tipoLesion,
+                    tipoLesion:
+                        datosFormulario.tipoLesion,
 
-                        subtipoLescah:
-                            datosFormulario.subtipoLescah,
+                    subtipoLescah:
+                        datosFormulario.subtipoLescah,
 
-                        clasificacionLesion:
-                            datosFormulario.clasificacionLesion,
+                    clasificacionLesion:
+                        datosFormulario.clasificacionLesion,
 
-                        cambioPosicion:
-                            datosFormulario.cambioPosicion,
+                    cambioPosicion:
+                        datosFormulario.cambioPosicion,
 
-                        acidosGrasosHiperoxigenados:
-                            datosFormulario
-                                .acidosGrasosHiperoxigenados,
+                    acidosGrasosHiperoxigenados:
+                        datosFormulario
+                            .acidosGrasosHiperoxigenados,
 
-                        apositoLiberacion:
-                            datosFormulario.apositoLiberacion,
+                    apositoLiberacion:
+                        datosFormulario.apositoLiberacion,
 
-                        barreraProteccion:
-                            datosFormulario.barreraProteccion,
+                    barreraProteccion:
+                        datosFormulario.barreraProteccion,
 
-                        toallasRemovedoras:
-                            datosFormulario.toallasRemovedoras,
+                    toallasRemovedoras:
+                        datosFormulario.toallasRemovedoras,
 
-                        usoPanal:
-                            datosFormulario.usoPanal,
+                    usoPanal:
+                        datosFormulario.usoPanal,
 
-                        observaciones:
-                            datosFormulario.observaciones
+                    observaciones:
+                        datosFormulario.observaciones
 
-                    });
+                };
+
+                let valoracionProcesada = null;
+
+                if (modoEdicion) {
+
+                    valoracionProcesada =
+                        await actualizarValoracion({
+
+                            valoracionId,
+
+                            ...datosValoracion
+
+                        });
+
+                } else {
+
+                    valoracionProcesada =
+                        await guardarValoracion(
+                            datosValoracion
+                        );
+
+                }
 
                 console.log(
-                    "✅ Flujo completo guardado:",
+                    modoEdicion
+                        ? "✅ Flujo completo actualizado:"
+                        : "✅ Flujo completo guardado:",
                     {
                         paciente,
                         ingreso,
                         valoracion:
-                            valoracionGuardada
+                            valoracionProcesada
                     }
                 );
 
                 mostrarNotificacion(
-                    "Valoración guardada correctamente",
+                    modoEdicion
+                        ? "Valoración actualizada correctamente"
+                        : "Valoración guardada correctamente",
                     4500
                 );
 
@@ -1568,13 +1887,19 @@ if (formValoracion) {
             } catch (error) {
 
                 console.error(
-                    "❌ Error al guardar la valoración:",
+                    modoEdicion
+                        ? "❌ Error al actualizar la valoración:"
+                        : "❌ Error al guardar la valoración:",
                     error
                 );
 
                 mostrarNotificacion(
                     error.message ||
-                    "No fue posible guardar la valoración",
+                    (
+                        modoEdicion
+                            ? "No fue posible actualizar la valoración"
+                            : "No fue posible guardar la valoración"
+                    ),
                     5000
                 );
 
@@ -1590,7 +1915,6 @@ if (formValoracion) {
     );
 
 }
-
 /* ==========================================================
    PRUEBA DE CONEXIÓN
 ========================================================== */
