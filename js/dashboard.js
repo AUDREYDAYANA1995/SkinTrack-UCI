@@ -1545,7 +1545,624 @@ async function obtenerMotorIndicadoresClinicos() {
 
     return indicadores;
 }
+/* ==========================================================
+   PANTALLA DE ESTADÍSTICAS CLÍNICAS
+========================================================== */
 
+
+/**
+ * Cambia la visibilidad de los estados principales
+ * de la pantalla de estadísticas.
+ *
+ * @param {"cargando"|"contenido"|"sinDatos"} estado
+ */
+function mostrarEstadoEstadisticas(estado) {
+
+    const cargando =
+        document.getElementById(
+            "estadisticasEstadoCarga"
+        );
+
+    const contenido =
+        document.getElementById(
+            "estadisticasContenido"
+        );
+
+    const sinDatos =
+        document.getElementById(
+            "estadisticasSinDatos"
+        );
+
+    if (cargando) {
+        cargando.hidden =
+            estado !== "cargando";
+    }
+
+    if (contenido) {
+        contenido.hidden =
+            estado !== "contenido";
+    }
+
+    if (sinDatos) {
+        sinDatos.hidden =
+            estado !== "sinDatos";
+    }
+
+}
+
+
+/**
+ * Convierte un porcentaje en un valor seguro
+ * entre 0 y 100.
+ *
+ * @param {unknown} valor
+ * @returns {number}
+ */
+function normalizarPorcentajeEstadistica(valor) {
+
+    const porcentaje =
+        Number(valor) || 0;
+
+    return Math.min(
+        Math.max(
+            porcentaje,
+            0
+        ),
+        100
+    );
+
+}
+
+
+/**
+ * Escribe texto en un elemento identificado por su ID.
+ *
+ * @param {string} id
+ * @param {unknown} valor
+ */
+function escribirTextoEstadistica(
+    id,
+    valor
+) {
+
+    const elemento =
+        document.getElementById(id);
+
+    if (!elemento) {
+        return;
+    }
+
+    elemento.textContent =
+        String(valor ?? "");
+
+}
+
+
+/**
+ * Crea una fila visual de indicador clínico.
+ *
+ * @param {Object} configuracion
+ * @param {string} configuracion.nombre
+ * @param {number} configuracion.cantidad
+ * @param {number} configuracion.total
+ * @returns {string}
+ */
+function construirFilaIndicadorEstadistica({
+    nombre,
+    cantidad,
+    total
+}) {
+
+    const cantidadNumerica =
+        Number(cantidad) || 0;
+
+    const totalNumerico =
+        Number(total) || 0;
+
+    const porcentaje =
+        calcularPorcentajeIndicador(
+            cantidadNumerica,
+            totalNumerico
+        );
+
+    const porcentajeSeguro =
+        normalizarPorcentajeEstadistica(
+            porcentaje
+        );
+
+    return `
+        <article class="statistics-indicator-item">
+
+            <div class="statistics-indicator-header">
+
+                <span class="statistics-indicator-name">
+                    ${escaparHTML(nombre)}
+                </span>
+
+                <div class="statistics-indicator-result">
+
+                    <strong>
+                        ${cantidadNumerica}
+                    </strong>
+
+                    <small>
+                        ${porcentajeSeguro} %
+                    </small>
+
+                </div>
+
+            </div>
+
+            <div class="statistics-indicator-progress">
+
+                <div
+                    class="statistics-indicator-progress-value"
+                    style="width: ${porcentajeSeguro}%;"
+                ></div>
+
+            </div>
+
+        </article>
+    `;
+
+}
+
+
+/**
+ * Renderiza una lista de categorías clínicas.
+ *
+ * @param {string} contenedorId
+ * @param {Array<Object>} categorias
+ * @param {number} total
+ */
+function renderizarListaIndicadoresEstadistica(
+    contenedorId,
+    categorias,
+    total
+) {
+
+    const contenedor =
+        document.getElementById(
+            contenedorId
+        );
+
+    if (!contenedor) {
+        return;
+    }
+
+    const categoriasValidas =
+        Array.isArray(categorias)
+            ? categorias
+            : [];
+
+    contenedor.innerHTML =
+        categoriasValidas
+            .map(
+                (categoria) =>
+                    construirFilaIndicadorEstadistica({
+                        nombre:
+                            categoria.nombre,
+
+                        cantidad:
+                            categoria.cantidad,
+
+                        total
+                    })
+            )
+            .join("");
+
+}
+
+
+/**
+ * Renderiza el cumplimiento diario.
+ *
+ * @param {Object} resumen
+ */
+function renderizarCumplimientoEstadisticas(
+    resumen
+) {
+
+    const pacientesActivos =
+        Number(
+            resumen?.pacientesActivos
+        ) || 0;
+
+    const valoradosHoy =
+        Number(
+            resumen?.valoradosHoy
+        ) || 0;
+
+    const cumplimiento =
+        normalizarPorcentajeEstadistica(
+            resumen?.cumplimiento
+        );
+
+    escribirTextoEstadistica(
+        "estadisticaCumplimientoPorcentaje",
+        `${cumplimiento} %`
+    );
+
+    escribirTextoEstadistica(
+        "estadisticaValoradosHoy",
+        valoradosHoy
+    );
+
+    escribirTextoEstadistica(
+        "estadisticaPacientesActivos",
+        pacientesActivos
+    );
+
+    const barra =
+        document.getElementById(
+            "estadisticaCumplimientoBarra"
+        );
+
+    if (barra) {
+        barra.style.width =
+            `${cumplimiento}%`;
+    }
+
+}
+
+
+/**
+ * Renderiza la distribución del riesgo.
+ *
+ * @param {Object} riesgo
+ * @param {number} totalValorados
+ */
+function renderizarRiesgoEstadisticas(
+    riesgo,
+    totalValorados
+) {
+
+    escribirTextoEstadistica(
+        "estadisticaRiesgoTotal",
+        `${totalValorados} valorados`
+    );
+
+    const categorias = [
+        {
+            nombre: "Riesgo bajo",
+            cantidad:
+                riesgo?.bajo || 0
+        },
+        {
+            nombre: "Riesgo medio",
+            cantidad:
+                riesgo?.medio || 0
+        },
+        {
+            nombre: "Riesgo alto",
+            cantidad:
+                riesgo?.alto || 0
+        }
+    ];
+
+    /*
+     * Esta categoría solamente se muestra
+     * cuando realmente existen registros sin dato.
+     */
+    if (
+        Number(
+            riesgo?.sinRegistro
+        ) > 0
+    ) {
+
+        categorias.push({
+            nombre: "Sin registro",
+            cantidad:
+                riesgo.sinRegistro
+        });
+
+    }
+
+    renderizarListaIndicadoresEstadistica(
+        "estadisticaRiesgoLista",
+        categorias,
+        totalValorados
+    );
+
+}
+
+
+/**
+ * Renderiza el estado general de la piel.
+ *
+ * @param {Object} piel
+ * @param {number} totalValorados
+ */
+function renderizarEstadoPielEstadisticas(
+    piel,
+    totalValorados
+) {
+
+    escribirTextoEstadistica(
+        "estadisticaPielTotal",
+        `${totalValorados} valorados`
+    );
+
+    const categorias = [
+        {
+            nombre: "Piel íntegra",
+            cantidad:
+                piel?.integra || 0
+        },
+        {
+            nombre: "Con lesión",
+            cantidad:
+                piel?.lesion || 0
+        }
+    ];
+
+    /*
+     * El motor utiliza "otro" para cualquier
+     * opción existente en el formulario que
+     * no corresponda a piel íntegra o lesión.
+     */
+    if (
+        Number(
+            piel?.otro
+        ) > 0
+    ) {
+
+        categorias.push({
+            nombre: "Otra condición registrada",
+            cantidad:
+                piel.otro
+        });
+
+    }
+
+    if (
+        Number(
+            piel?.sinRegistro
+        ) > 0
+    ) {
+
+        categorias.push({
+            nombre: "Sin registro",
+            cantidad:
+                piel.sinRegistro
+        });
+
+    }
+
+    renderizarListaIndicadoresEstadistica(
+        "estadisticaPielLista",
+        categorias,
+        totalValorados
+    );
+
+}
+
+
+/**
+ * Limpia provisionalmente las secciones
+ * que se conectarán en los pasos siguientes.
+ */
+function prepararSeccionesPendientesEstadisticas() {
+
+    const seccionLesiones =
+        document.getElementById(
+            "estadisticaLesionesSeccion"
+        );
+
+    const seccionClasificaciones =
+        document.getElementById(
+            "estadisticaClasificacionesSeccion"
+        );
+
+    /*
+     * Todavía no mostramos estas secciones.
+     * Se activarán cuando conectemos tipos
+     * y clasificaciones de lesiones.
+     */
+    if (seccionLesiones) {
+        seccionLesiones.hidden = true;
+    }
+
+    if (seccionClasificaciones) {
+        seccionClasificaciones.hidden = true;
+    }
+
+}
+
+
+/**
+ * Consulta y muestra las estadísticas clínicas del día.
+ *
+ * @returns {Promise<void>}
+ */
+async function cargarEstadisticasClinicas() {
+
+    mostrarEstadoEstadisticas(
+        "cargando"
+    );
+
+    prepararSeccionesPendientesEstadisticas();
+
+    try {
+
+        const indicadores =
+            await obtenerMotorIndicadoresClinicos();
+
+        const totalValorados =
+            Number(
+                indicadores
+                    ?.resumen
+                    ?.valoradosHoy
+            ) || 0;
+
+        if (totalValorados === 0) {
+
+            /*
+             * Aunque no existan valoraciones,
+             * conservamos el cumplimiento calculado
+             * para poder revisar la información
+             * desde la consola.
+             */
+            console.log(
+                "ℹ️ No hay valoraciones clínicas del día:",
+                indicadores
+            );
+
+            mostrarEstadoEstadisticas(
+                "sinDatos"
+            );
+
+            return;
+        }
+
+        renderizarCumplimientoEstadisticas(
+            indicadores.resumen
+        );
+
+        renderizarRiesgoEstadisticas(
+            indicadores.riesgo,
+            totalValorados
+        );
+
+        renderizarEstadoPielEstadisticas(
+            indicadores.piel,
+            totalValorados
+        );
+
+        mostrarEstadoEstadisticas(
+            "contenido"
+        );
+
+        console.log(
+            "✅ Estadísticas clínicas mostradas:",
+            {
+                resumen:
+                    indicadores.resumen,
+
+                riesgo:
+                    indicadores.riesgo,
+
+                piel:
+                    indicadores.piel
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "❌ No fue posible cargar las estadísticas clínicas:",
+            error
+        );
+
+        const estadoCarga =
+            document.getElementById(
+                "estadisticasEstadoCarga"
+            );
+
+        if (estadoCarga) {
+
+            estadoCarga.innerHTML = `
+                <div class="statistics-empty-icon">
+                    !
+                </div>
+
+                <h3>
+                    No fue posible cargar los indicadores
+                </h3>
+
+                <p>
+                    Revise la conexión e intente nuevamente.
+                </p>
+            `;
+
+        }
+
+        mostrarEstadoEstadisticas(
+            "cargando"
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   ACTIVACIÓN DE LA PANTALLA DE ESTADÍSTICAS
+========================================================== */
+
+
+/**
+ * Detecta los botones que abren la pantalla
+ * de estadísticas.
+ */
+document.addEventListener(
+    "click",
+    (evento) => {
+
+        const boton =
+            evento.target.closest(
+                '[data-view="vistaEstadisticas"]'
+            );
+
+        if (!boton) {
+            return;
+        }
+
+        /*
+         * Se utiliza setTimeout para permitir que app.js
+         * termine primero el cambio de vista.
+         */
+        window.setTimeout(
+            () => {
+                cargarEstadisticasClinicas();
+            },
+            0
+        );
+
+    }
+);
+
+
+/**
+ * También observa la clase de la vista para cubrir
+ * aperturas realizadas mediante mostrarVista()
+ * desde otros módulos.
+ */
+const vistaEstadisticasObservada =
+    document.getElementById(
+        "vistaEstadisticas"
+    );
+
+if (vistaEstadisticasObservada) {
+
+    const observadorVistaEstadisticas =
+        new MutationObserver(
+            () => {
+
+                if (
+                    vistaEstadisticasObservada
+                        .classList
+                        .contains("active")
+                ) {
+
+                    cargarEstadisticasClinicas();
+
+                }
+
+            }
+        );
+
+    observadorVistaEstadisticas.observe(
+        vistaEstadisticasObservada,
+        {
+            attributes: true,
+            attributeFilter: [
+                "class"
+            ]
+        }
+    );
+
+}
 /* ==========================================================
    MÓDULO CARGADO
 ========================================================== */
