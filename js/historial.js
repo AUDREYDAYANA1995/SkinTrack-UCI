@@ -8,6 +8,15 @@
 
 
 /* ==========================================================
+   DATOS DEL HISTORIAL EN MEMORIA
+========================================================== */
+
+let ingresoHistorialSeleccionado = null;
+
+let valoracionesHistorialEnMemoria = [];
+
+
+/* ==========================================================
    UTILIDADES
 ========================================================== */
 
@@ -63,16 +72,53 @@ function formatearFechaHoraHistorial(fechaISO) {
 
 
 /**
- * Devuelve una etiqueta legible para valores booleanos.
+ * Devuelve la inicial del nombre del paciente.
  *
- * @param {unknown} valor
+ * @param {unknown} nombre
  * @returns {string}
  */
-function textoBooleanoHistorial(valor) {
+function obtenerInicialPacienteHistorial(nombre) {
 
-    return valor
-        ? "Sí"
-        : "No";
+    const texto =
+        String(nombre ?? "")
+            .trim();
+
+    return texto
+        ? texto.charAt(0).toUpperCase()
+        : "P";
+
+}
+
+
+/**
+ * Cambia el contenido de un elemento mediante su ID.
+ *
+ * @param {string} elementoId
+ * @param {unknown} valor
+ * @param {string} valorAlternativo
+ */
+function establecerTextoDetalleValoracion(
+    elementoId,
+    valor,
+    valorAlternativo = "Sin dato"
+) {
+
+    const elemento =
+        document.getElementById(
+            elementoId
+        );
+
+    if (!elemento) {
+        return;
+    }
+
+    const texto =
+        String(valor ?? "")
+            .trim();
+
+    elemento.textContent =
+        texto ||
+        valorAlternativo;
 
 }
 
@@ -140,6 +186,7 @@ async function consultarHistorialValoraciones(
         );
 
         throw new Error(
+            error.message ||
             "No fue posible consultar el historial."
         );
 
@@ -153,7 +200,7 @@ async function consultarHistorialValoraciones(
 
 
 /* ==========================================================
-   CONSTRUIR MEDIDAS PREVENTIVAS
+   MEDIDAS PREVENTIVAS
 ========================================================== */
 
 /**
@@ -217,7 +264,7 @@ function obtenerMedidasHistorial(
 
 
 /* ==========================================================
-   RENDERIZAR HISTORIAL
+   CONSTRUIR TARJETAS DEL HISTORIAL
 ========================================================== */
 
 /**
@@ -420,11 +467,39 @@ function construirTarjetaHistorial(
 
             </div>
 
+
+            <div class="history-card-actions">
+
+                <button
+                    type="button"
+                    class="history-action-button primary"
+                    data-action="ver-valoracion"
+                    data-valoracion-id="${escaparHTMLHistorial(
+                        valoracion.id
+                    )}"
+                >
+
+                    <span class="history-action-icon">
+                        V
+                    </span>
+
+                    <span>
+                        Ver valoración completa
+                    </span>
+
+                </button>
+
+            </div>
+
         </article>
     `;
 
 }
 
+
+/* ==========================================================
+   RENDERIZAR HISTORIAL
+========================================================== */
 
 /**
  * Muestra todas las valoraciones en pantalla.
@@ -450,9 +525,14 @@ function renderizarHistorialValoraciones(
 
     }
 
+    valoracionesHistorialEnMemoria =
+        Array.isArray(valoraciones)
+            ? valoraciones
+            : [];
+
     if (
-        !Array.isArray(valoraciones) ||
-        valoraciones.length === 0
+        valoracionesHistorialEnMemoria
+            .length === 0
     ) {
 
         contenedor.innerHTML = `
@@ -479,7 +559,7 @@ function renderizarHistorialValoraciones(
     }
 
     contenedor.innerHTML =
-        valoraciones
+        valoracionesHistorialEnMemoria
             .map(
                 construirTarjetaHistorial
             )
@@ -489,11 +569,11 @@ function renderizarHistorialValoraciones(
 
 
 /* ==========================================================
-   ABRIR HISTORIAL
+   ENCABEZADO DEL HISTORIAL
 ========================================================== */
 
 /**
- * Completa los datos generales del paciente en la vista.
+ * Completa los datos generales del paciente en el historial.
  *
  * @param {Object} ingreso
  */
@@ -517,6 +597,11 @@ function mostrarEncabezadoHistorial(
     const cedula =
         document.getElementById(
             "historialCedulaPaciente"
+        );
+
+    const inicial =
+        document.getElementById(
+            "historialInicialPaciente"
         );
 
     if (nombre) {
@@ -543,8 +628,244 @@ function mostrarEncabezadoHistorial(
 
     }
 
+    if (inicial) {
+
+        inicial.textContent =
+            obtenerInicialPacienteHistorial(
+                paciente.nombre
+            );
+
+    }
+
 }
 
+
+/* ==========================================================
+   DETALLE DE LA VALORACIÓN
+========================================================== */
+
+/**
+ * Construye la lista completa de medidas preventivas.
+ *
+ * @param {Object} valoracion
+ */
+function mostrarMedidasDetalleValoracion(
+    valoracion
+) {
+
+    const contenedor =
+        document.getElementById(
+            "detalleValoracionMedidas"
+        );
+
+    if (!contenedor) {
+        return;
+    }
+
+    const medidas = [
+        {
+            nombre:
+                "Cambio de posición",
+            activa:
+                Boolean(
+                    valoracion
+                        .cambio_posicion
+                )
+        },
+        {
+            nombre:
+                "Ácidos grasos hiperoxigenados",
+            activa:
+                Boolean(
+                    valoracion
+                        .acidos_grasos_hiperoxigenados
+                )
+        },
+        {
+            nombre:
+                "Apósitos de liberación",
+            activa:
+                Boolean(
+                    valoracion
+                        .aposito_liberacion
+                )
+        },
+        {
+            nombre:
+                "Barrera de protección",
+            activa:
+                Boolean(
+                    valoracion
+                        .barrera_proteccion
+                )
+        },
+        {
+            nombre:
+                "Toallas removedoras",
+            activa:
+                Boolean(
+                    valoracion
+                        .toallas_removedoras
+                )
+        }
+    ];
+
+    contenedor.innerHTML =
+        medidas
+            .map(
+                (medida) => `
+                    <div
+                        class="valuation-measure-item ${
+                            medida.activa
+                                ? "active"
+                                : "inactive"
+                        }"
+                    >
+
+                        <span
+                            class="valuation-measure-status"
+                            aria-hidden="true"
+                        >
+                            ${
+                                medida.activa
+                                    ? "✓"
+                                    : "—"
+                            }
+                        </span>
+
+                        <span>
+                            ${escaparHTMLHistorial(
+                                medida.nombre
+                            )}
+                        </span>
+
+                    </div>
+                `
+            )
+            .join("");
+
+}
+
+
+/**
+ * Abre la pantalla con la valoración completa.
+ *
+ * @param {Object} valoracion
+ */
+function abrirDetalleValoracion(
+    valoracion
+) {
+
+    if (!valoracion?.id) {
+
+        mostrarNotificacion(
+            "No se encontró la valoración seleccionada."
+        );
+
+        return;
+
+    }
+
+    const paciente =
+        ingresoHistorialSeleccionado
+            ?.pacientes || {};
+
+    establecerTextoDetalleValoracion(
+        "detalleValoracionInicial",
+        obtenerInicialPacienteHistorial(
+            paciente.nombre
+        ),
+        "P"
+    );
+
+    establecerTextoDetalleValoracion(
+        "detalleValoracionNombrePaciente",
+        paciente.nombre,
+        "Paciente sin nombre"
+    );
+
+    establecerTextoDetalleValoracion(
+        "detalleValoracionCama",
+        valoracion.cama ||
+        ingresoHistorialSeleccionado?.cama
+    );
+
+    establecerTextoDetalleValoracion(
+        "detalleValoracionCedula",
+        paciente.cedula
+    );
+
+    establecerTextoDetalleValoracion(
+        "detalleValoracionFecha",
+        formatearFechaHoraHistorial(
+            valoracion.fecha_hora_registro
+        ),
+        "Sin fecha"
+    );
+
+    establecerTextoDetalleValoracion(
+        "detalleValoracionRiesgo",
+        valoracion.riesgo
+    );
+
+    establecerTextoDetalleValoracion(
+        "detalleValoracionEstadoPiel",
+        valoracion.estado_piel
+    );
+
+    establecerTextoDetalleValoracion(
+        "detalleValoracionTipoLesion",
+        valoracion.tipo_lesion,
+        "No aplica"
+    );
+
+    establecerTextoDetalleValoracion(
+        "detalleValoracionClasificacion",
+        valoracion.clasificacion_lesion,
+        "No aplica"
+    );
+
+    establecerTextoDetalleValoracion(
+        "detalleValoracionSubtipoLescah",
+        valoracion.subtipo_lescah,
+        "No aplica"
+    );
+
+    establecerTextoDetalleValoracion(
+        "detalleValoracionUsoPanal",
+        valoracion.uso_panal
+    );
+
+    establecerTextoDetalleValoracion(
+        "detalleValoracionResponsable",
+        valoracion.registrado_por
+    );
+
+    establecerTextoDetalleValoracion(
+        "detalleValoracionObservaciones",
+        valoracion.observaciones,
+        "Sin observaciones"
+    );
+
+    mostrarMedidasDetalleValoracion(
+        valoracion
+    );
+
+    mostrarVista(
+        "vistaDetalleValoracion"
+    );
+
+    console.log(
+        "✅ Detalle de valoración abierto:",
+        valoracion
+    );
+
+}
+
+
+/* ==========================================================
+   ABRIR HISTORIAL
+========================================================== */
 
 /**
  * Abre y carga el historial de un ingreso.
@@ -565,8 +886,11 @@ async function abrirHistorialPaciente(
 
     }
 
+    ingresoHistorialSeleccionado =
+        ingreso;
+
     mostrarEncabezadoHistorial(
-        ingreso
+        ingresoHistorialSeleccionado
     );
 
     mostrarVista(
@@ -653,6 +977,62 @@ async function abrirHistorialPaciente(
         );
 
     }
+
+}
+
+
+/* ==========================================================
+   ACCIONES DEL HISTORIAL
+========================================================== */
+
+const contenedorHistorialValoraciones =
+    document.getElementById(
+        "listaHistorialValoraciones"
+    );
+
+if (contenedorHistorialValoraciones) {
+
+    contenedorHistorialValoraciones
+        .addEventListener(
+            "click",
+            function (event) {
+
+                const boton =
+                    event.target.closest(
+                        "[data-action='ver-valoracion']"
+                    );
+
+                if (!boton) {
+                    return;
+                }
+
+                const valoracionId =
+                    boton.dataset.valoracionId;
+
+                const valoracion =
+                    valoracionesHistorialEnMemoria
+                        .find(
+                            (item) =>
+                                String(item.id) ===
+                                String(valoracionId)
+                        );
+
+                if (!valoracion) {
+
+                    mostrarNotificacion(
+                        "No se encontró la valoración seleccionada."
+                    );
+
+                    return;
+
+                }
+
+                abrirDetalleValoracion(
+                    valoracion
+                );
+
+            }
+        );
 
 }
 
