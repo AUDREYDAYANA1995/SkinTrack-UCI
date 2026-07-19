@@ -1195,8 +1195,21 @@ async function obtenerMotorIndicadoresClinicos() {
 
         },
 
-        clasificaciones: {},
+        clasificacionesPorTipo: {
 
+    presion: {},
+
+    lescah: {},
+
+    marsi: {},
+
+    desgarroCutaneo: {},
+
+    friccion: {},
+
+    otro: {}
+
+},
         medidasPreventivas: {
 
             cambioPosicion: {
@@ -1343,6 +1356,108 @@ async function obtenerMotorIndicadoresClinicos() {
 
             }
 
+           /* ==============================================
+   TIPO DE LESIÓN
+============================================== */
+
+const tipoLesionOriginal =
+    String(
+        valoracion.tipo_lesion || ""
+    ).trim();
+
+const tipoLesion =
+    normalizarTextoIndicador(
+        tipoLesionOriginal
+    );
+
+/*
+ * Esta clave permitirá conservar la relación:
+ *
+ * tipo de lesión → clasificación.
+ */
+let claveTipoLesion =
+    "otro";
+
+if (!tipoLesion) {
+
+    indicadores.lesiones
+        .sinRegistro += 1;
+
+    claveTipoLesion =
+        "otro";
+
+} else if (
+    tipoLesion.includes("PRESION")
+) {
+
+    indicadores.lesiones
+        .presion += 1;
+
+    claveTipoLesion =
+        "presion";
+
+} else if (
+    tipoLesion.includes("LESCAH")
+) {
+
+    indicadores.lesiones
+        .lescah += 1;
+
+    claveTipoLesion =
+        "lescah";
+
+} else if (
+    tipoLesion.includes("MARSI")
+) {
+
+    indicadores.lesiones
+        .marsi += 1;
+
+    claveTipoLesion =
+        "marsi";
+
+} else if (
+    tipoLesion.includes("DESGARRO")
+) {
+
+    indicadores.lesiones
+        .desgarroCutaneo += 1;
+
+    claveTipoLesion =
+        "desgarroCutaneo";
+
+} else if (
+    tipoLesion.includes("FRICCION")
+) {
+
+    indicadores.lesiones
+        .friccion += 1;
+
+    claveTipoLesion =
+        "friccion";
+
+} else {
+
+    indicadores.lesiones
+        .otro += 1;
+
+    claveTipoLesion =
+        "otro";
+
+}
+
+if (tipoLesionOriginal) {
+
+    incrementarCategoriaIndicador(
+        indicadores
+            .lesiones
+            .categorias,
+
+        tipoLesionOriginal
+    );
+
+}
+
 
             /* ==============================================
                SUBTIPOS LESCAH
@@ -1423,24 +1538,34 @@ async function obtenerMotorIndicadoresClinicos() {
 
 
             /* ==============================================
-               CLASIFICACIÓN DE LA LESIÓN
-            ============================================== */
+   CLASIFICACIÓN DE LA LESIÓN
+============================================== */
 
-            const clasificacion =
-                String(
-                    valoracion
-                        .clasificacion_lesion ||
-                    ""
-                ).trim();
+const clasificacion =
+    String(
+        valoracion
+            .clasificacion_lesion ||
+        ""
+    ).trim();
 
-            if (clasificacion) {
+if (clasificacion) {
 
-                incrementarCategoriaIndicador(
-                    indicadores.clasificaciones,
-                    clasificacion
-                );
+    const grupoClasificaciones =
+        indicadores
+            .clasificacionesPorTipo[
+                claveTipoLesion
+            ];
 
-            }
+    if (grupoClasificaciones) {
+
+        incrementarCategoriaIndicador(
+            grupoClasificaciones,
+            clasificacion
+        );
+
+    }
+
+}
 
 
             /* ==============================================
@@ -2117,6 +2242,156 @@ function construirTarjetaClasificacionEstadistica(
  *
  * @param {Object} indicadores
  */
+/**
+ * Construye una tarjeta que mantiene unidas
+ * las clasificaciones con su tipo de lesión.
+ *
+ * @param {Object} configuracion
+ * @param {string} configuracion.titulo
+ * @param {number} configuracion.totalTipo
+ * @param {Object} configuracion.clasificaciones
+ * @param {Object|null} configuracion.subtipos
+ * @returns {string}
+ */
+function construirTarjetaTipoLesionEstadistica({
+    titulo,
+    totalTipo,
+    clasificaciones,
+    subtipos = null
+}) {
+
+    const totalNumerico =
+        Number(totalTipo) || 0;
+
+    if (totalNumerico <= 0) {
+        return "";
+    }
+
+    const listaClasificaciones =
+        convertirCategoriasAListaEstadistica(
+            clasificaciones
+        );
+
+    const listaSubtipos =
+        convertirCategoriasAListaEstadistica(
+            subtipos
+        );
+
+    const bloqueSubtipos =
+        listaSubtipos.length > 0
+            ? `
+                <div class="statistics-lesion-subgroup">
+
+                    <h5>
+                        Clasificación LESCAH
+                    </h5>
+
+                    <div class="statistics-indicator-list">
+
+                        ${
+                            listaSubtipos
+                                .map(
+                                    (categoria) =>
+                                        construirFilaIndicadorEstadistica({
+                                            nombre:
+                                                categoria.nombre,
+
+                                            cantidad:
+                                                categoria.cantidad,
+
+                                            total:
+                                                totalNumerico
+                                        })
+                                )
+                                .join("")
+                        }
+
+                    </div>
+
+                </div>
+            `
+            : "";
+
+    const totalClasificaciones =
+        sumarCategoriasEstadistica(
+            clasificaciones
+        );
+
+    const bloqueClasificaciones =
+        listaClasificaciones.length > 0
+            ? `
+                <div class="statistics-lesion-subgroup">
+
+                    <h5>
+                        Clasificación de la lesión
+                    </h5>
+
+                    <div class="statistics-indicator-list">
+
+                        ${
+                            listaClasificaciones
+                                .map(
+                                    (categoria) =>
+                                        construirFilaIndicadorEstadistica({
+                                            nombre:
+                                                categoria.nombre,
+
+                                            cantidad:
+                                                categoria.cantidad,
+
+                                            total:
+                                                totalClasificaciones
+                                        })
+                                )
+                                .join("")
+                        }
+
+                    </div>
+
+                </div>
+            `
+            : `
+                <p class="statistics-classification-empty">
+                    Sin clasificación adicional registrada.
+                </p>
+            `;
+
+    return `
+        <article class="statistics-classification-card">
+
+            <div class="statistics-lesion-type-heading">
+
+                <h4>
+                    ${escaparHTML(titulo)}
+                </h4>
+
+                <span class="statistics-total-badge">
+                    ${totalNumerico}
+                    ${
+                        totalNumerico === 1
+                            ? "caso"
+                            : "casos"
+                    }
+                </span>
+
+            </div>
+
+            ${bloqueSubtipos}
+
+            ${bloqueClasificaciones}
+
+        </article>
+    `;
+
+}
+
+
+/**
+ * Renderiza las clasificaciones debajo del tipo
+ * de lesión al que pertenecen.
+ *
+ * @param {Object} indicadores
+ */
 function renderizarClasificacionesEstadisticas(
     indicadores
 ) {
@@ -2135,58 +2410,97 @@ function renderizarClasificacionesEstadisticas(
         return;
     }
 
-    const tarjetas = [];
+    const lesiones =
+        indicadores?.lesiones || {};
 
-    const categoriasLescah =
-        convertirCategoriasAListaEstadistica(
-            indicadores?.lescah?.categorias
-        );
+    const clasificaciones =
+        indicadores
+            ?.clasificacionesPorTipo || {};
 
-    const totalLescah =
-        sumarCategoriasEstadistica(
-            indicadores?.lescah?.categorias
-        );
+    const tarjetas = [
 
-    const tarjetaLescah =
-        construirTarjetaClasificacionEstadistica(
-            "Clasificación LESCAH",
-            categoriasLescah,
-            totalLescah
-        );
+        construirTarjetaTipoLesionEstadistica({
+            titulo:
+                "Presión",
 
-    if (tarjetaLescah) {
-        tarjetas.push(tarjetaLescah);
-    }
+            totalTipo:
+                lesiones.presion || 0,
 
-    const categoriasClasificacion =
-        convertirCategoriasAListaEstadistica(
-            indicadores?.clasificaciones
-        );
+            clasificaciones:
+                clasificaciones.presion
+        }),
 
-    const totalClasificaciones =
-        sumarCategoriasEstadistica(
-            indicadores?.clasificaciones
-        );
+        construirTarjetaTipoLesionEstadistica({
+            titulo:
+                "LESCAH",
 
-    const tarjetaClasificaciones =
-        construirTarjetaClasificacionEstadistica(
-            "Clasificación de las lesiones",
-            categoriasClasificacion,
-            totalClasificaciones
-        );
+            totalTipo:
+                lesiones.lescah || 0,
 
-    if (tarjetaClasificaciones) {
-        tarjetas.push(
-            tarjetaClasificaciones
-        );
-    }
+            clasificaciones:
+                clasificaciones.lescah,
+
+            subtipos:
+                indicadores
+                    ?.lescah
+                    ?.categorias
+        }),
+
+        construirTarjetaTipoLesionEstadistica({
+            titulo:
+                "MARSI",
+
+            totalTipo:
+                lesiones.marsi || 0,
+
+            clasificaciones:
+                clasificaciones.marsi
+        }),
+
+        construirTarjetaTipoLesionEstadistica({
+            titulo:
+                "Desgarro cutáneo",
+
+            totalTipo:
+                lesiones.desgarroCutaneo || 0,
+
+            clasificaciones:
+                clasificaciones
+                    .desgarroCutaneo
+        }),
+
+        construirTarjetaTipoLesionEstadistica({
+            titulo:
+                "Fricción",
+
+            totalTipo:
+                lesiones.friccion || 0,
+
+            clasificaciones:
+                clasificaciones.friccion
+        }),
+
+        construirTarjetaTipoLesionEstadistica({
+            titulo:
+                "Otro tipo de lesión",
+
+            totalTipo:
+                lesiones.otro || 0,
+
+            clasificaciones:
+                clasificaciones.otro
+        })
+
+    ].filter(Boolean);
 
     contenedor.innerHTML =
         tarjetas.join("");
 
     if (seccion) {
+
         seccion.hidden =
             tarjetas.length === 0;
+
     }
 
 }
