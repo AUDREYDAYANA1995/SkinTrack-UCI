@@ -5,7 +5,84 @@
    SkinTrack UCI
    Módulo de valoraciones
 ========================================================== */
+/* ==========================================================
+   ESTADO DE EDICIÓN
+========================================================== */
 
+let valoracionEnEdicionId = null;
+
+
+/**
+ * Activa el modo edición para una valoración.
+ *
+ * @param {string} valoracionId
+ */
+function iniciarEdicionValoracion(
+    valoracionId
+) {
+
+    const idNormalizado =
+        normalizarTextoValoracion(
+            valoracionId
+        );
+
+    if (!idNormalizado) {
+
+        throw new Error(
+            "No se recibió el identificador de la valoración."
+        );
+
+    }
+
+    valoracionEnEdicionId =
+        idNormalizado;
+
+    console.log(
+        "✏️ Modo edición activado:",
+        valoracionEnEdicionId
+    );
+
+}
+
+
+/**
+ * Finaliza el modo edición.
+ */
+function finalizarEdicionValoracion() {
+
+    valoracionEnEdicionId = null;
+
+    console.log(
+        "✅ Modo edición finalizado"
+    );
+
+}
+
+
+/**
+ * Obtiene el identificador de la valoración en edición.
+ *
+ * @returns {string|null}
+ */
+function obtenerValoracionEnEdicionId() {
+
+    return valoracionEnEdicionId;
+
+}
+
+
+/**
+ * Indica si existe una valoración en edición.
+ *
+ * @returns {boolean}
+ */
+function estaEditandoValoracion() {
+
+    return Boolean(
+        valoracionEnEdicionId
+    );
+
+}
 
 /* ==========================================================
    NORMALIZACIÓN DE DATOS
