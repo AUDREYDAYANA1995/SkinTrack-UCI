@@ -2394,3 +2394,48 @@ button.patient-card:focus-visible {
     color: #68758e;
     font-size: 14px;
 }
+/* ==========================================================
+   TIPOS DE LESIÓN CON CATEGORÍAS INTEGRADAS
+========================================================== */
+
+.statistics-lesion-item {
+    padding: 16px;
+    background: #f8faff;
+    border: 1px solid #e3e9f5;
+    border-radius: 18px;
+}
+
+.statistics-lesion-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 10px;
+}
+
+.statistics-lesion-name {
+    color: #081f63;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.statistics-lesion-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #dce4f2;
+}
+
+.statistics-lesion-details
+.statistics-indicator-item {
+    padding: 12px;
+    background: #ffffff;
+}
+
+.statistics-lesion-details
+.statistics-indicator-name {
+    font-size: 14px;
+    font-weight: 700;
+}
