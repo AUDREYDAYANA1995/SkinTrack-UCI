@@ -316,11 +316,72 @@ if (botonEgreso) {
 
     botonEgreso.addEventListener(
         "click",
-        function () {
+        async function () {
 
-            mostrarNotificacion(
-                "La opción de egreso se habilitará próximamente"
+            if (!ingresoPacienteSeleccionado?.id) {
+
+                mostrarNotificacion(
+                    "Seleccione primero un paciente."
+                );
+
+                return;
+
+            }
+
+            const confirmar = confirm(
+                "¿Está seguro de dar egreso a este paciente?\n\n" +
+                "El paciente dejará de aparecer como ACTIVO, " +
+                "pero conservará todo su historial clínico."
             );
+
+            if (!confirmar) {
+                return;
+            }
+
+            try {
+
+                await darEgresoIngresoUCI(
+                    ingresoPacienteSeleccionado.id
+                );
+
+                mostrarNotificacion(
+                    "Paciente egresado correctamente."
+                );
+
+                ingresoPacienteSeleccionado = null;
+
+                /*
+                 * Recargar pacientes activos
+                 */
+                if (typeof cargarPacientesActivos === "function") {
+                    await cargarPacientesActivos();
+                }
+
+                /*
+                 * Actualizar dashboard
+                 */
+                if (typeof actualizarResumenInicio === "function") {
+                    await actualizarResumenInicio();
+                }
+
+                /*
+                 * Volver a la lista de pacientes
+                 */
+                mostrarVista("vistaPacientes");
+
+            } catch (error) {
+
+                console.error(
+                    "❌ Error al dar egreso:",
+                    error
+                );
+
+                mostrarNotificacion(
+                    error.message ||
+                    "No fue posible registrar el egreso."
+                );
+
+            }
 
         }
     );
