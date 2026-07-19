@@ -2092,8 +2092,8 @@ async function cargarEstadisticasClinicas() {
 
 
 /**
- * Detecta los botones que abren la pantalla
- * de estadísticas.
+ * Observa la clase de la vista para cargar
+ * los indicadores cuando Estadísticas se activa.
  */
 document.addEventListener(
     "click",
