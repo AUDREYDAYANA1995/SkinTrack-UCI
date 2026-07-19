@@ -290,10 +290,20 @@ if (botonHistorial) {
 
     botonHistorial.addEventListener(
         "click",
-        function () {
+        async function () {
 
-            mostrarNotificacion(
-                "El historial se habilitará próximamente"
+            if (!ingresoPacienteSeleccionado?.id) {
+
+                mostrarNotificacion(
+                    "Seleccione primero un paciente"
+                );
+
+                return;
+
+            }
+
+            await abrirHistorialPaciente(
+                ingresoPacienteSeleccionado
             );
 
         }
