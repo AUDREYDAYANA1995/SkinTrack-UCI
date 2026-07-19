@@ -982,6 +982,125 @@
     </section>
 
 </section>
+
+        <!-- ==================================================
+     HISTORIAL DEL PACIENTE
+=================================================== -->
+
+<section
+    id="vistaHistorialPaciente"
+    class="view"
+>
+
+    <div class="section-header">
+
+        <button
+            type="button"
+            class="back-button"
+            data-view="vistaDetallePaciente"
+            aria-label="Volver a la ficha del paciente"
+        >
+            ‹
+        </button>
+
+        <div>
+
+            <p class="section-label">
+                Seguimiento clínico
+            </p>
+
+            <h2>
+                Historial de valoraciones
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <!-- Información resumida del paciente -->
+
+    <article class="patient-detail-card">
+
+        <div class="patient-detail-heading">
+
+            <div class="patient-avatar">
+                P
+            </div>
+
+            <div>
+
+                <span class="patient-detail-status completed">
+                    Historial clínico
+                </span>
+
+                <h3 id="historialNombrePaciente">
+                    Paciente
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="patient-detail-grid">
+
+            <div class="patient-detail-item">
+
+                <span>
+                    Cama
+                </span>
+
+                <strong id="historialCamaPaciente">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="patient-detail-item">
+
+                <span>
+                    Cédula
+                </span>
+
+                <strong id="historialCedulaPaciente">
+                    —
+                </strong>
+
+            </div>
+
+        </div>
+
+    </article>
+
+
+    <!-- Contenedor de las valoraciones -->
+
+    <section
+        id="listaHistorialValoraciones"
+        class="history-list"
+    >
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                H
+            </div>
+
+            <h3>
+                Cargando historial
+            </h3>
+
+            <p>
+                Consultando las valoraciones registradas.
+            </p>
+
+        </div>
+
+    </section>
+
+</section>
         
         <!-- ==================================================
              ESTADÍSTICAS
