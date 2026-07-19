@@ -495,6 +495,149 @@ async function guardarValoracion({
 
 }
 
+/* ==========================================================
+   ACTUALIZAR VALORACIÓN
+========================================================== */
+
+/**
+ * Actualiza una valoración existente.
+ *
+ * @param {Object} datos
+ * @param {string} datos.valoracionId
+ * @param {string} datos.ingresoId
+ * @param {string} datos.cama
+ * @param {string} datos.registradoPor
+ * @param {string} datos.riesgo
+ * @param {string} datos.estadoPiel
+ * @param {string} datos.tipoLesion
+ * @param {string} datos.subtipoLescah
+ * @param {string} datos.clasificacionLesion
+ * @param {boolean} datos.cambioPosicion
+ * @param {boolean} datos.acidosGrasosHiperoxigenados
+ * @param {boolean} datos.apositoLiberacion
+ * @param {boolean} datos.barreraProteccion
+ * @param {boolean} datos.toallasRemovedoras
+ * @param {string} datos.usoPanal
+ * @param {string} datos.observaciones
+ * @returns {Promise<Object>}
+ */
+async function actualizarValoracion({
+    valoracionId,
+    ingresoId,
+    cama,
+    registradoPor,
+    riesgo,
+    estadoPiel,
+    tipoLesion = "",
+    subtipoLescah = "",
+    clasificacionLesion = "",
+    cambioPosicion = false,
+    acidosGrasosHiperoxigenados = false,
+    apositoLiberacion = false,
+    barreraProteccion = false,
+    toallasRemovedoras = false,
+    usoPanal = "",
+    observaciones = ""
+}) {
+
+    const idNormalizado =
+        normalizarTextoValoracion(
+            valoracionId
+        );
+
+    if (!idNormalizado) {
+
+        throw new Error(
+            "Se requiere el identificador de la valoración que se desea actualizar."
+        );
+
+    }
+
+    const datosValoracion = {
+
+        ingresoId,
+        cama,
+        registradoPor,
+        riesgo,
+        estadoPiel,
+        tipoLesion,
+        subtipoLescah,
+        clasificacionLesion,
+        cambioPosicion,
+        acidosGrasosHiperoxigenados,
+        apositoLiberacion,
+        barreraProteccion,
+        toallasRemovedoras,
+        usoPanal,
+        observaciones
+
+    };
+
+    validarValoracionClinica(
+        datosValoracion
+    );
+
+    const valoracionActualizada =
+        construirRegistroValoracion(
+            datosValoracion
+        );
+
+    const { data, error } =
+        await supabaseClient
+            .from("valoraciones")
+            .update(
+                valoracionActualizada
+            )
+            .eq(
+                "id",
+                idNormalizado
+            )
+            .select(`
+                id,
+                ingreso_id,
+                cama,
+                registrado_por,
+                riesgo,
+                estado_piel,
+                tipo_lesion,
+                subtipo_lescah,
+                clasificacion_lesion,
+                cambio_posicion,
+                acidos_grasos_hiperoxigenados,
+                aposito_liberacion,
+                barrera_proteccion,
+                toallas_removedoras,
+                uso_panal,
+                observaciones,
+                fecha_hora_registro
+            `)
+            .single();
+
+    if (error) {
+
+        console.error(
+            "❌ Error al actualizar la valoración:",
+            error
+        );
+
+        throw new Error(
+            error.message ||
+            "No fue posible actualizar la valoración."
+        );
+
+    }
+
+    finalizarEdicionValoracion();
+
+    console.log(
+        "✅ Valoración actualizada:",
+        data
+    );
+
+    return data;
+
+}
+
 
 /* ==========================================================
    MÓDULO CARGADO
