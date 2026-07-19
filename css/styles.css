@@ -774,18 +774,19 @@ button {
 
 .bottom-navigation {
 
-    position: absolute;
+    position: fixed;
 
-    left: 0;
-    right: 0;
+    left: 50%;
     bottom: 0;
 
-    width: auto;
+    width: 100%;
+    max-width: 480px;
 
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     align-items: end;
 
+    margin: 0;
     padding: 14px 12px calc(12px + env(safe-area-inset-bottom));
 
     background: #ffffff;
@@ -794,9 +795,12 @@ button {
     border-radius: 0 0 28px 28px;
 
     box-shadow:
-        0 -8px 24px rgba(8,46,155,.08);
+        0 -8px 24px rgba(8, 46, 155, 0.08);
+
+    transform: translateX(-50%);
 
     z-index: 100;
+
 }
 /* ==========================================================
    NOTIFICACIONES
@@ -847,34 +851,37 @@ button {
    RESPONSIVE
 ========================================================== */
 
-@media (min-width:481px){
+@media (min-width: 481px) {
 
-    body{
-        padding:24px 0;
-    }
+    body {
 
-    .app{
-
-        min-height:calc(100vh - 48px);
-
-        border-radius:28px;
-
-        overflow:hidden;
+        padding:
+            24px
+            0;
 
     }
 
-    .bottom-navigation{
+    .app {
 
-        left:0;
-        right:0;
-        bottom:0;
+        min-height:
+            calc(100vh - 48px);
 
-        border-radius:0 0 28px 28px;
+        border-radius:
+            28px;
+
+    }
+
+    .bottom-navigation {
+
+        bottom:
+            24px;
+
+        border-radius:
+            0 0 28px 28px;
 
     }
 
 }
-
 
 /* ==========================================================
    PACIENTES ACTIVOS
@@ -2244,31 +2251,53 @@ button.patient-card:focus-visible {
 @media (max-width: 600px) {
 
     .statistics-section {
-        padding: 17px;
-        border-radius: 18px;
+
+        padding:
+            17px;
+
+        border-radius:
+            18px;
+
     }
 
     .statistics-section-heading,
     .statistics-card-heading {
-        align-items: flex-start;
+
+        align-items:
+            flex-start;
+
     }
 
     .statistics-section-heading h3,
     .statistics-card-heading h3 {
-        font-size: 19px;
+
+        font-size:
+            19px;
+
     }
 
     .statistics-main-percentage {
-        font-size: 24px;
+
+        font-size:
+            24px;
+
     }
 
     .statistics-total-badge {
-        font-size: 11px;
+
+        font-size:
+            11px;
+
     }
 
     .statistics-indicator-name {
-        font-size: 14px;
+
+        font-size:
+            14px;
+
     }
+
+}
     /* ==========================================================
    RELACIÓN ENTRE TIPO Y CLASIFICACIÓN DE LA LESIÓN
 ========================================================== */
@@ -2363,28 +2392,89 @@ button.patient-card:focus-visible {
 /* ==========================================================
    BOTONES DEL MENÚ INFERIOR
 ========================================================== */
-.bottom-navigation button{
 
-    width:100%;
+.bottom-navigation .nav-button {
 
-    border:none;
+    width:
+        100%;
 
-    background:transparent;
+    min-width:
+        0;
 
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
+    min-height:
+        62px;
 
-    gap:6px;
+    display:
+        flex;
 
-    min-width:0;
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        6px;
+
+    margin:
+        0;
+
+    padding:
+        7px 3px;
+
+    border:
+        none;
+
+    background:
+        transparent;
+
+    color:
+        var(--text-soft);
+
+    cursor:
+        pointer;
+
+    text-align:
+        center;
 
 }
 
-.bottom-navigation button span{
+.bottom-navigation .nav-button span {
 
-    white-space:nowrap;
+    white-space:
+        nowrap;
 
 }
 
+.bottom-navigation .nav-button small {
+
+    color:
+        inherit;
+
+    font-size:
+        10px;
+
+    line-height:
+        1.2;
+
+}
+
+.bottom-navigation .nav-button.active {
+
+    color:
+        var(--primary);
+
+}
+
+.bottom-navigation .main-nav-button {
+
+    position:
+        relative;
+
+    min-width:
+        0;
+
+}
