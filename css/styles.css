@@ -2083,3 +2083,271 @@ button.patient-card:focus-visible {
     line-height: 1;
 
 }
+/* ==========================================================
+   ESTADÍSTICAS CLÍNICAS
+========================================================== */
+
+.statistics-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-bottom: 110px;
+}
+
+
+/* ==========================================================
+   ESTADOS DE CARGA Y SIN DATOS
+========================================================== */
+
+.statistics-empty-state {
+    padding: 34px 22px;
+    margin-top: 18px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #e5ebf7;
+    border-radius: 22px;
+}
+
+.statistics-empty-icon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 14px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: #edf2ff;
+    color: #082e9b;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.statistics-empty-state h3 {
+    margin: 0 0 8px;
+    color: #081f63;
+    font-size: 20px;
+}
+
+.statistics-empty-state p {
+    margin: 0;
+    color: #60708f;
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   SECCIONES
+========================================================== */
+
+.statistics-section {
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #e5ebf7;
+    border-radius: 22px;
+    box-shadow: 0 10px 28px rgba(8, 46, 155, 0.07);
+}
+
+.statistics-section-heading,
+.statistics-card-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.statistics-section-heading h3,
+.statistics-card-heading h3 {
+    margin: 3px 0 0;
+    color: #081f63;
+    font-size: 21px;
+    line-height: 1.2;
+}
+
+.statistics-total-badge {
+    flex-shrink: 0;
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: #eef3ff;
+    color: #082e9b;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   CUMPLIMIENTO
+========================================================== */
+
+.statistics-compliance-card {
+    width: 100%;
+}
+
+.statistics-main-percentage {
+    flex-shrink: 0;
+    color: #082e9b;
+    font-size: 28px;
+    line-height: 1;
+}
+
+.statistics-progress {
+    width: 100%;
+    height: 12px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e8edf7;
+}
+
+.statistics-progress-value {
+    height: 100%;
+    min-width: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+        90deg,
+        #082e9b,
+        #4169d8
+    );
+    transition: width 0.35s ease;
+}
+
+.statistics-compliance-detail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    color: #5e6b85;
+    font-size: 14px;
+}
+
+.statistics-compliance-detail strong {
+    color: #081f63;
+}
+
+
+/* ==========================================================
+   LISTAS DE INDICADORES
+========================================================== */
+
+.statistics-indicator-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.statistics-indicator-item {
+    padding: 14px;
+    background: #f8faff;
+    border: 1px solid #e7ecf7;
+    border-radius: 16px;
+}
+
+.statistics-indicator-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.statistics-indicator-name {
+    color: #243354;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.statistics-indicator-result {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.statistics-indicator-result strong {
+    color: #081f63;
+    font-size: 18px;
+}
+
+.statistics-indicator-result small {
+    color: #68758e;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.statistics-indicator-progress {
+    width: 100%;
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e5eaf4;
+}
+
+.statistics-indicator-progress-value {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(
+        90deg,
+        #0a3cab,
+        #6686e8
+    );
+    transition: width 0.35s ease;
+}
+
+
+/* ==========================================================
+   CLASIFICACIONES
+========================================================== */
+
+.statistics-classification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.statistics-classification-card {
+    padding: 16px;
+    background: #f8faff;
+    border: 1px solid #e7ecf7;
+    border-radius: 18px;
+}
+
+.statistics-classification-card h4 {
+    margin: 0 0 14px;
+    color: #081f63;
+    font-size: 17px;
+}
+
+
+/* ==========================================================
+   ADAPTACIÓN MÓVIL
+========================================================== */
+
+@media (max-width: 600px) {
+
+    .statistics-section {
+        padding: 17px;
+        border-radius: 18px;
+    }
+
+    .statistics-section-heading,
+    .statistics-card-heading {
+        align-items: flex-start;
+    }
+
+    .statistics-section-heading h3,
+    .statistics-card-heading h3 {
+        font-size: 19px;
+    }
+
+    .statistics-main-percentage {
+        font-size: 24px;
+    }
+
+    .statistics-total-badge {
+        font-size: 11px;
+    }
+
+    .statistics-indicator-name {
+        font-size: 14px;
+    }
+
+}
