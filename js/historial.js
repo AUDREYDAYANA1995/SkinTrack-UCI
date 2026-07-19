@@ -1036,7 +1036,63 @@ if (contenedorHistorialValoraciones) {
 
 }
 
+/* ==========================================================
+   ACCIONES DEL DETALLE DE LA VALORACIÓN
+========================================================== */
 
+const botonEditarValoracion =
+    document.getElementById(
+        "btnEditarValoracion"
+    );
+
+if (botonEditarValoracion) {
+
+    botonEditarValoracion.addEventListener(
+        "click",
+        function () {
+
+            const valoracionActual =
+                valoracionesHistorialEnMemoria.find(
+                    (item) =>
+                        String(item.id) ===
+                        String(
+                            document
+                                .getElementById("detalleValoracionFecha")
+                                ?.dataset
+                                ?.valoracionId
+                        )
+                );
+
+            if (!valoracionActual) {
+
+                mostrarNotificacion(
+                    "No se encontró la valoración."
+                );
+
+                return;
+
+            }
+
+            console.log(
+                "✏️ Editar valoración:",
+                valoracionActual
+            );
+
+            iniciarEdicionValoracion(
+                valoracionActual.id
+            );
+
+            // Aquí cargaremos el formulario
+            // en el siguiente paso.
+
+            mostrarNotificacion(
+                "Modo edición activado."
+            );
+
+        }
+    );
+
+}
 /* ==========================================================
    MÓDULO CARGADO
 ========================================================== */
