@@ -2060,23 +2060,178 @@ function convertirCategoriasAListaEstadistica(
 
 
 /**
- * Renderiza los tipos de lesión usando exactamente
- * las categorías registradas en el formulario.
+ * Construye un bloque con el tipo de lesión
+ * y sus clasificaciones asociadas.
  *
- * @param {Object} lesiones
+ * @param {Object} configuracion
+ * @param {string} configuracion.nombre
+ * @param {number} configuracion.cantidad
+ * @param {number} configuracion.totalLesiones
+ * @param {Object} configuracion.clasificaciones
+ * @param {Object|null} configuracion.subtipos
+ * @returns {string}
+ */
+function construirBloqueTipoLesionEstadistica({
+    nombre,
+    cantidad,
+    totalLesiones,
+    clasificaciones,
+    subtipos = null
+}) {
+
+    const cantidadNumerica =
+        Number(cantidad) || 0;
+
+    if (cantidadNumerica <= 0) {
+        return "";
+    }
+
+    const porcentajeTipo =
+        calcularPorcentajeIndicador(
+            cantidadNumerica,
+            totalLesiones
+        );
+
+    const listaSubtipos =
+        convertirCategoriasAListaEstadistica(
+            subtipos
+        );
+
+    const listaClasificaciones =
+        convertirCategoriasAListaEstadistica(
+            clasificaciones
+        );
+
+    const detalleSubtipos =
+        listaSubtipos
+            .map(
+                (categoria) =>
+                    construirFilaIndicadorEstadistica({
+                        nombre:
+                            categoria.nombre,
+
+                        cantidad:
+                            categoria.cantidad,
+
+                        total:
+                            cantidadNumerica
+                    })
+            )
+            .join("");
+
+    const totalClasificaciones =
+        sumarCategoriasEstadistica(
+            clasificaciones
+        );
+
+    const detalleClasificaciones =
+        listaClasificaciones
+            .map(
+                (categoria) =>
+                    construirFilaIndicadorEstadistica({
+                        nombre:
+                            categoria.nombre,
+
+                        cantidad:
+                            categoria.cantidad,
+
+                        total:
+                            totalClasificaciones ||
+                            cantidadNumerica
+                    })
+            )
+            .join("");
+
+    const detalle =
+        [
+            detalleSubtipos,
+            detalleClasificaciones
+        ]
+            .filter(Boolean)
+            .join("");
+
+    return `
+        <article class="statistics-lesion-item">
+
+            <div class="statistics-lesion-main">
+
+                <span class="statistics-lesion-name">
+                    ${escaparHTML(nombre)}
+                </span>
+
+                <div class="statistics-indicator-result">
+
+                    <strong>
+                        ${cantidadNumerica}
+                    </strong>
+
+                    <small>
+                        ${porcentajeTipo} %
+                    </small>
+
+                </div>
+
+            </div>
+
+            <div class="statistics-indicator-progress">
+
+                <div
+                    class="statistics-indicator-progress-value"
+                    style="width: ${porcentajeTipo}%;"
+                ></div>
+
+            </div>
+
+            ${
+                detalle
+                    ? `
+                        <div class="statistics-lesion-details">
+                            ${detalle}
+                        </div>
+                    `
+                    : ""
+            }
+
+        </article>
+    `;
+
+}
+
+
+/**
+ * Renderiza cada tipo de lesión junto con
+ * sus categorías dentro de la misma sección.
+ *
+ * @param {Object} indicadores
  */
 function renderizarTiposLesionEstadisticas(
-    lesiones
+    indicadores
 ) {
 
-    const categorias =
-        convertirCategoriasAListaEstadistica(
-            lesiones?.categorias
+    const contenedor =
+        document.getElementById(
+            "estadisticaLesionesLista"
         );
+
+    const seccion =
+        document.getElementById(
+            "estadisticaLesionesSeccion"
+        );
+
+    if (!contenedor) {
+        return;
+    }
+
+    const lesiones =
+        indicadores?.lesiones || {};
+
+    const clasificaciones =
+        indicadores
+            ?.clasificacionesPorTipo || {};
 
     const totalLesiones =
         sumarCategoriasEstadistica(
-            lesiones?.categorias
+            lesiones.categorias
         );
 
     escribirTextoEstadistica(
@@ -2088,21 +2243,101 @@ function renderizarTiposLesionEstadisticas(
         }`
     );
 
-    const seccion =
-        document.getElementById(
-            "estadisticaLesionesSeccion"
-        );
+    const bloques = [
+
+        construirBloqueTipoLesionEstadistica({
+            nombre:
+                "Presión",
+
+            cantidad:
+                lesiones.presion || 0,
+
+            totalLesiones,
+
+            clasificaciones:
+                clasificaciones.presion
+        }),
+
+        construirBloqueTipoLesionEstadistica({
+            nombre:
+                "LESCAH",
+
+            cantidad:
+                lesiones.lescah || 0,
+
+            totalLesiones,
+
+            subtipos:
+                indicadores
+                    ?.lescah
+                    ?.categorias,
+
+            clasificaciones:
+                clasificaciones.lescah
+        }),
+
+        construirBloqueTipoLesionEstadistica({
+            nombre:
+                "MARSI",
+
+            cantidad:
+                lesiones.marsi || 0,
+
+            totalLesiones,
+
+            clasificaciones:
+                clasificaciones.marsi
+        }),
+
+        construirBloqueTipoLesionEstadistica({
+            nombre:
+                "Desgarro cutáneo",
+
+            cantidad:
+                lesiones.desgarroCutaneo || 0,
+
+            totalLesiones,
+
+            clasificaciones:
+                clasificaciones
+                    .desgarroCutaneo
+        }),
+
+        construirBloqueTipoLesionEstadistica({
+            nombre:
+                "Fricción",
+
+            cantidad:
+                lesiones.friccion || 0,
+
+            totalLesiones,
+
+            clasificaciones:
+                clasificaciones.friccion
+        }),
+
+        construirBloqueTipoLesionEstadistica({
+            nombre:
+                "Otro tipo de lesión",
+
+            cantidad:
+                lesiones.otro || 0,
+
+            totalLesiones,
+
+            clasificaciones:
+                clasificaciones.otro
+        })
+
+    ].filter(Boolean);
+
+    contenedor.innerHTML =
+        bloques.join("");
 
     if (seccion) {
         seccion.hidden =
-            totalLesiones === 0;
+            bloques.length === 0;
     }
-
-    renderizarListaIndicadoresEstadistica(
-        "estadisticaLesionesLista",
-        categorias,
-        totalLesiones
-    );
 
 }
 
@@ -2624,10 +2859,6 @@ async function cargarEstadisticasClinicas() {
 );
 
 renderizarTiposLesionEstadisticas(
-    indicadores.lesiones
-);
-
-renderizarClasificacionesEstadisticas(
     indicadores
 );
 
