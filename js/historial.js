@@ -1054,7 +1054,7 @@ if (botonEditarValoracion) {
 
     botonEditarValoracion.addEventListener(
         "click",
-        function () {
+        async function () {
 
             if (!valoracionDetalleActual?.id) {
 
@@ -1066,21 +1066,36 @@ if (botonEditarValoracion) {
 
             }
 
-            console.log(
-                "✏️ Editar valoración:",
-                valoracionDetalleActual
-            );
+            if (!ingresoHistorialSeleccionado?.id) {
 
-            iniciarEdicionValoracion(
-                valoracionDetalleActual.id
-            );
+                mostrarNotificacion(
+                    "No se encontró el ingreso del paciente."
+                );
 
-            mostrarNotificacion(
-                "Modo edición activado."
-            );
+                return;
 
-            // En el siguiente paso cargaremos
-            // los datos en el formulario.
+            }
+
+            try {
+
+                await abrirValoracionParaEditar(
+                    valoracionDetalleActual,
+                    ingresoHistorialSeleccionado
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "❌ Error al abrir la edición:",
+                    error
+                );
+
+                mostrarNotificacion(
+                    error.message ||
+                    "No fue posible abrir la valoración para editar."
+                );
+
+            }
 
         }
     );
